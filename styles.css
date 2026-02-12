@@ -1,0 +1,499 @@
+:root {
+  --goo-ui-zoom: 0.5;
+}
+
+html {
+  zoom: var(--goo-ui-zoom);
+}
+
+@supports not (zoom: 1) {
+  body {
+    transform: scale(var(--goo-ui-zoom));
+    transform-origin: top left;
+    width: calc(100% / var(--goo-ui-zoom));
+  }
+}
+
+body {
+  margin: 0;
+  background: black;
+  font-family: 'Kanit', sans-serif;
+  overflow-x: hidden;
+}
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+.icon-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 30px;
+  padding: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.icon-grid a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #f97316;
+  transition: all 0.3s ease;
+  position: relative;
+}
+.icon-grid a:hover {
+  color: #ea580c;
+  transform: translateY(-2px);
+  text-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+}
+.icon-grid a::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #f97316, #ea580c);
+  transition: width 0.3s ease;
+}
+.icon-grid a:hover::before {
+  width: 100%;
+}
+.icon-grid img {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.1);
+  padding: 10px;
+  transition: transform 0.3s;
+}
+.icon-grid img:hover {
+  transform: scale(1.2);
+}
+#searchInput {
+  position: relative;
+  z-index: 3;
+  display: block;
+  margin: 80px auto 20px;
+  padding: 10px;
+  width: 300px;
+  max-width: 90%;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  font-size: 16px;
+  text-align: center;
+}
+#searchInput::placeholder {
+  color: rgba(255,255,255,0.6);
+}
+
+/* Chat Widget Styles */
+.chat-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  transition: all 0.3s ease;
+}
+.chat-widget:hover {
+  transform: scale(1.1);
+  box-shadow: 0 15px 50px rgba(249,115,22,0.7);
+}
+.chat-widget img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.chat-panel {
+  position: fixed;
+  bottom: 110px;
+  right: 20px;
+  width: 400px;
+  height: 500px;
+  background: rgba(0,0,0,0.95);
+  border: 2px solid #f97316;
+  border-radius: 20px;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+}
+.chat-header {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  padding: 15px;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  color: white;
+}
+.chat-input {
+  padding: 15px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.chat-input input {
+  width: 100%;
+  padding: 10px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+}
+.chat-input input::placeholder {
+  color: rgba(255,255,255,0.5);
+}
+.message {
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  max-width: 80%;
+}
+.message.user {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  margin-left: auto;
+  text-align: right;
+}
+.message.bot {
+  background: rgba(255,255,255,0.1);
+  margin-right: auto;
+}
+.typing-indicator {
+  display: none;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  margin-right: auto;
+  max-width: 80px;
+}
+.typing-indicator span {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f97316;
+  margin: 0 2px;
+  animation: typing 1.4s infinite;
+}
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Touch-friendly drag and placeholder visuals */
+.shortcut { touch-action: pan-y; }
+.shortcut[draggable="true"] { touch-action: none; }
+.shortcut.placeholder {
+  outline: 2px dashed rgba(255,255,255,0.3);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.06);
+}
+
+/* Header controls */
+.header-controls {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 4000;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+.controls-toggle { display: none; }
+.controls-panel {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+.chip,
+.btn-chip {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+
+/* Mobile collapsible header controls */
+@media (max-width: 640px) {
+  .controls-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .controls-panel {
+    display: none;
+    position: fixed;
+    top: 54px;
+    right: 10px;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    z-index: 4000;
+  }
+  .controls-panel.open { display: flex; }
+  
+  .chat-panel {
+    width: 90%;
+    right: 5%;
+    left: 5%;
+  }
+  .btn-add {
+    bottom: 120px;
+    right: 20px;
+  }
+}
+
+/* Add button */
+.btn-add {
+  position: fixed;
+  bottom: 20px;
+  right: 120px;
+  z-index: 1000;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(45deg, #2196F3, #00BCD4);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-add:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+}
+
+/* Background button */
+.btn-bg {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(45deg, #9C27B0, #E91E63);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-bg:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
+}
+
+/* Shortcuts grid */
+.shortcuts-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 30px;
+  padding: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+/* Ensure at least 4 icons per row on small screens */
+@media (max-width: 640px) {
+  .shortcuts-container {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    padding: 24px 16px;
+    max-width: none;
+  }
+  .shortcut-icon {
+    width: 64px;
+    height: 64px;
+  }
+  .shortcut-icon img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Shortcut card */
+.shortcut {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+  position: relative;
+  user-select: none;
+}
+.shortcut-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  background: var(--card-bg, rgba(255,255,255,0.1));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.shortcut-icon img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+.shortcut-name {
+  color: var(--text-color, #fff);
+  font-size: 14px;
+  text-align: center;
+  word-break: break-word;
+  max-width: 100%;
+  padding: 0 5px;
+}
+.delete-shortcut {
+  background: #ff4444;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .2s;
+}
+.shortcut:hover .delete-shortcut { opacity: 1; }
+
+/* Modal */
+#shortcutModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+}
+#shortcutModal .modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+}
+#shortcutModal input[type="url"],
+#shortcutModal input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+#shortcutModal .btn-submit {
+  background-color: #4CAF50; color: #fff; border: none; border-radius: 4px; padding: 8px 20px; cursor: pointer;
+}
+#shortcutModal .btn-cancel {
+  background-color: #f44336; color: #fff; border: none; border-radius: 4px; padding: 8px 20px; cursor: pointer;
+}
+#shortcutModal .btn-reset {
+  background-color: #ff9800; color: #fff; border: none; border-radius: 4px; padding: 8px 20px; cursor: pointer;
+}
+#bgModal .modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+}
+#bgModal input[type="file"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+#bgModal .btn-submit {
+  background-color: #4CAF50; color: #fff; border: none; border-radius: 4px; padding: 8px 20px; cursor: pointer;
+}
+#bgModal .btn-cancel {
+  background-color: #f44336; color: #fff; border: none; border-radius: 4px; padding: 8px 20px; cursor: pointer;
+}
+#bgModal .btn-reset {
+  background-color: #ff9800; color: #fff; border: none; border-radius: 4px; padding: 8px 20px; cursor: pointer;
+}
+
+/* Trash can */
+#trashCan {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 0, 0, 0.75);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  z-index: 3000;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity .2s, transform .2s, background .2s;
+  pointer-events: none;
+}

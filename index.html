@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Goo Gemnee - สุดยอดผู้ช่วยสายปั่น</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="icon" type="image/png" href="/api1.png">
+    <meta name="theme-color" content="#000000">
+    <link rel="apple-touch-icon" href="/api1.png">
+
+    <script>
+      (function () {
+        try {
+          var primary = '/api1.png';
+          var fallback = '/Gemnee.png';
+          var img = new Image();
+          img.onload = function () {};
+          img.onerror = function () {
+            try {
+              var icons = document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]');
+              for (var i = 0; i < icons.length; i++) {
+                icons[i].setAttribute('href', fallback);
+              }
+            } catch (_) {}
+          };
+          img.src = primary;
+        } catch (_) {}
+      })();
+    </script>
+
+    <!-- สำหรับ iOS Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- สำหรับ Chrome/Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <link rel="alternate" type="application/rss+xml" title="Goonee' RSS" href="https://audio.com/rss/collection/1856762119672147">
+    
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+  </head>
+  <body>
+
+    <div id="root"></div>
+
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
