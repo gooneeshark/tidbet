@@ -2,6 +2,9 @@
   --goo-ui-zoom: 0.5;
 }
 
+/* Tailwind directives were intentionally removed to avoid requiring tailwind packages in this environment.
+  If you want to install Tailwind locally, add the directives back and install tailwindcss/postcss/autoprefixer. */
+
 html {
   zoom: var(--goo-ui-zoom);
 }
@@ -24,7 +27,7 @@ canvas {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: -1; /* keep canvas in the background */
 }
 .icon-grid {
   position: relative;
