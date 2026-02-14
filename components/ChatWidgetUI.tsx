@@ -38,34 +38,6 @@ const ChatWidgetUI: React.FC<ChatWidgetUIProps> = ({
 
   const remainingMessages = Math.max(0, limit - messageCount);
 
-  const renderMessageText = (text: string) => {
-    if (!text) return null;
-    const urlRegex = /https?:\/\/[^\s)]+/g;
-    const elements: Array<string | JSX.Element> = [];
-    let lastIndex = 0;
-    let match: RegExpExecArray | null;
-    while ((match = urlRegex.exec(text)) !== null) {
-      const idx = match.index;
-      if (idx > lastIndex) {
-        elements.push(text.slice(lastIndex, idx));
-      }
-      const url = match[0];
-      elements.push(
-        <a key={elements.length} href={url} target="_blank" rel="noopener noreferrer" className="text-orange-400 underline">
-          {url}
-        </a>
-      );
-      lastIndex = idx + url.length;
-    }
-    if (lastIndex < text.length) {
-      elements.push(text.slice(lastIndex));
-    }
-
-    return elements.map((el, i) => (
-      typeof el === 'string' ? <span key={i}>{el}</span> : <React.Fragment key={i}>{el}</React.Fragment>
-    ));
-  };
-
   return (
     <div className="mb-4 w-[350px] sm:w-[400px] h-[550px] bg-zinc-900 rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-zinc-700 animate-in slide-in-from-bottom-10 fade-in duration-300">
       {/* Header */}
@@ -171,7 +143,7 @@ const ChatWidgetUI: React.FC<ChatWidgetUIProps> = ({
               }`}
             >
               <div className="whitespace-pre-wrap break-words leading-relaxed">
-                {renderMessageText(msg.text)}
+                {msg.text}
               </div>
               <div className={`text-[10px] mt-1 font-medium ${msg.role === 'user' ? 'text-orange-200' : 'text-zinc-500'}`}>
                 {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

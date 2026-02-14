@@ -17,7 +17,7 @@ const getGoogleFavicon = (url: string) => {
   }
 };
 
-const BUNDLE_WIDGET_BASE = 'https://raw.githubusercontent.com/P200p/bundle_widget/main';
+const BUNDLE_WIDGET_BASE = 'https://raw.githubusercontent.com/gooneeshark/googem/main';
 
 interface Shortcut {
   id?: string;
@@ -56,7 +56,6 @@ const GoostoryEmbed: React.FC = () => {
   const [showApiPreview, setShowApiPreview] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newShortcut, setNewShortcut] = useState({ name: '', url: '' });
-  const [iframeUrlInput, setIframeUrlInput] = useState('https://audio.com/goo-nee/collections/goonee');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const theme = useMemo(() => getThemeById(themeId), [themeId]);
   const [uiZoom, setUiZoom] = useState<number>(() => {
@@ -69,48 +68,6 @@ const GoostoryEmbed: React.FC = () => {
     document.documentElement.style.setProperty('--goo-ui-zoom', String(uiZoom));
     localStorage.setItem('goo_ui_zoom', String(uiZoom));
   }, [uiZoom]);
-
-  // Load iframe src immediately on page load
-  useEffect(() => {
-    const iframeElement = document.querySelector('iframe');
-    if (iframeElement) {
-      iframeElement.src = iframeUrlInput;
-    }
-  }, []);
-
-  const handleChangeIframeUrl = () => {
-    let url = iframeUrlInput.trim();
-
-    if (!url) {
-      alert('กรุณาป้อน URL หรือคำค้นหา');
-      return;
-    }
-
-    // ตรวจสอบว่าเป็นการค้นหาหรือ URL
-    const isDomain = url.includes('.') && !url.includes(' ');
-    const hasProtocol = url.startsWith('http://') || url.startsWith('https://');
-
-    if (!isDomain || !hasProtocol) {
-      // ถ้าเป็นคำค้นหา (ไม่มี dot หรือมี space) ให้ search ด้วย Google
-      if (!isDomain) {
-        url = `https://www.google.com/search?q=${encodeURIComponent(url)}`;
-      } else {
-        // เป็น domain แต่ไม่มี protocol → เพิ่ม https://
-        url = 'https://' + url;
-      }
-    }
-
-    try {
-      new URL(url); // Validate URL
-      const iframeElement = document.querySelector('iframe');
-      if (iframeElement) {
-        iframeElement.src = url;
-        setIframeUrlInput(url); // Update state to show the actual URL
-      }
-    } catch (e) {
-      alert('URL ไม่ถูกต้อง กรุณาลองใหม่');
-    }
-  };
   
   useEffect(() => {
     // Matrix background effect
@@ -585,7 +542,7 @@ const GoostoryEmbed: React.FC = () => {
           >
             <div className={`w-[min(92vw,600px)] ${theme.ui.panelBg} backdrop-blur-xl border ${theme.ui.panelBorder} rounded-3xl shadow-2xl overflow-hidden`}>
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
-                <div className="text-white font-black text-sm truncate">มินิเบราเซอร์</div>
+                <div className="text-white font-black text-sm truncate">audio.com</div>
                 <button
                   type="button"
                   onClick={() => setIsAudioSheetOpen(false)}
@@ -594,38 +551,19 @@ const GoostoryEmbed: React.FC = () => {
                   พับ
                 </button>
               </div>
-              
-              {/* URL Input Bar */}
-              <div className="px-4 py-3 border-b border-white/10 bg-zinc-800/50 flex items-center gap-2">
-                <input
-                  type="text"
-                  value={iframeUrlInput}
-                  onChange={(e) => setIframeUrlInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleChangeIframeUrl()}
-                  placeholder="พิมพ์ URL ที่นี่ (เช่น https://audio.com)"
-                  className="flex-1 bg-zinc-900 text-white text-xs rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-600 border border-zinc-700 placeholder:text-zinc-600"
-                />
-                <button
-                  type="button"
-                  onClick={handleChangeIframeUrl}
-                  className="px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white text-xs font-black rounded-lg transition-all active:scale-95"
-                >
-                  ไป
-                </button>
-              </div>
-
               <div
                 style={{
                   overflowY: 'auto',
-                  maxHeight: 'calc(95vh - 120px)',
+                  maxHeight: 'calc(95vh - 56px)',
                   WebkitOverflowScrolling: 'touch'
                 }}
               >
                 <iframe
+                  src="https://audio.com/embed/collection/1856762119672147?theme=image&noanalytic=true"
                   style={{ borderRadius: '1px', border: 'none', height: '696px', width: '600px', maxWidth: '100%', display: 'block' }}
                   allowTransparency={true}
                   allow="autoplay; encrypted-media; clipboard-write"
-                  title="mini-browser"
+                  title="audio.com collection"
                 />
               </div>
             </div>

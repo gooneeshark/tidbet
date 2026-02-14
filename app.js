@@ -51,7 +51,7 @@ setInterval(draw, 50);
 // Load shortcuts from JSON
 async function loadShortcuts() {
   try {
-    const response = await fetch('https://raw.githubusercontent.com/P200p/bundle_widget/main/card.json');
+    const response = await fetch('https://googem.netlify.app/card.json');
     const data = await response.json();
     const container = document.getElementById('shortcutsContainer');
     
@@ -63,7 +63,7 @@ async function loadShortcuts() {
           <div class="shortcut-icon">
             <img src="${site.image || site.logo || `https://www.google.com/s2/favicons?domain=${new URL(site.url).hostname}&sz=128`}" 
                  alt="${site.name}"
-                 onerror="this.src='https://raw.githubusercontent.com/P200p/bundle_widget/main/public/logo/default.webp'">
+                 onerror="this.src='https://googem.netlify.app/public/logo/default.webp'">
           </div>
           <div class="shortcut-name">${site.name}</div>
         </a>
@@ -222,7 +222,7 @@ submitBtn.addEventListener('click', () => {
           <div class="shortcut-icon">
             <img src="https://www.google.com/s2/favicons?domain=${domain}&sz=128" 
                  alt="${name}"
-                 onerror="this.src='https://raw.githubusercontent.com/P200p/bundle_widget/main/public/logo/default.webp'">
+                 onerror="this.src='https://googem.netlify.app/public/logo/default.webp'">
           </div>
           <div class="shortcut-name">${name}</div>
         </a>
@@ -314,7 +314,7 @@ function loadUserShortcuts() {
         <div class="shortcut-icon">
           <img src="https://www.google.com/s2/favicons?domain=${domain}&sz=128" 
                alt="${shortcut.name}"
-               onerror="this.src='https://raw.githubusercontent.com/P200p/bundle_widget/main/public/logo/default.webp'">
+               onerror="this.src='https://googem.netlify.app/public/logo/default.webp'">
         </div>
         <div class="shortcut-name">${shortcut.name}</div>
       </a>

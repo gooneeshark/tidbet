@@ -25,3 +25,4 @@ public/mp3_backup/
 *.njsproj
 *.sln
 *.sw?
+.github/chatmodes/Autoplanner.chatmode.md
