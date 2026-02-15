@@ -74,6 +74,7 @@
 
     <script type="module" src="/index.tsx"></script>
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function(OneSignal) {
@@ -82,6 +83,28 @@
       safari_web_id: "web.onesignal.auto.0b751c21-4ab5-448f-a888-cd2e20e2cfd5",
       notifyButton: {
         enable: true,
+        /* เพิ่มส่วนนี้เพื่อแก้ข้อความ */
+        text: {
+          'tip.state.unsubscribed': 'เปิดแจ้งเตือนไว้ เพื่อไม่ให้พลาดรางวัลครั้งถัดไป',
+          'tip.state.subscribed': 'คุณเปิดแจ้งเตือนรางวัลแล้ว',
+          'tip.state.blocked': 'คุณบล็อกการแจ้งเตือนไว้',
+          'message.prenotify': 'เปิดแจ้งเตือนไว้ เพื่อไม่ให้พลาดรางวัลครั้งถัดไป',
+          'dialog.main.title': 'จัดการการแจ้งเตือนรางวัล',
+          'dialog.main.button.subscribe': 'เปิดรับรางวัล',
+          'dialog.main.button.unsubscribe': 'ปิดรับรางวัล'
+        },
+        colors: { // แถม: ปรับสีให้เข้ากับธีมแดง-เหลืองของคุณ
+          'circle.background': '#dc2626',
+          'circle.foreground': '#facc15',
+          'badge.background': '#facc15',
+          'badge.foreground': '#dc2626',
+          'badge.bordercolor': '#ffffff',
+          'pulse.color': '#facc15',
+          'dialog.button.background.hovering': '#b91c1c',
+          'dialog.button.background.active': '#991b1b',
+          'dialog.button.background': '#dc2626',
+          'dialog.button.foreground': '#ffffff'
+        }
       },
     });
   });
