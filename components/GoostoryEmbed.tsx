@@ -17,7 +17,7 @@ const getGoogleFavicon = (url: string) => {
   }
 };
 
-const BUNDLE_WIDGET_BASE = 'https://googem.netlify.app/';
+const BUNDLE_WIDGET_BASE = 'https://googem.netlify.app';
 const MINI_BROWSER_HOME = 'https://audio.com/goo-nee/collections/goonee';
 
 interface Shortcut {
@@ -176,8 +176,17 @@ const GoostoryEmbed: React.FC = () => {
 
     window.addEventListener('resize', handleResize);
 
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [customBg, theme]);
+
+  // Separate effect for script injection and manager to avoid loops on theme change
+  useEffect(() => {
     const existingScript = document.querySelector('script[data-top-bar-widget="1"]');
     const script = existingScript instanceof HTMLScriptElement ? existingScript : document.createElement('script');
+    
     if (!existingScript) {
       script.setAttribute('data-top-bar-widget', '1');
       script.src = `${BUNDLE_WIDGET_BASE}/top-bar-widget.js`;
@@ -188,12 +197,13 @@ const GoostoryEmbed: React.FC = () => {
     const topBarManager = initTopBarManager();
 
     return () => {
-      clearInterval(interval);
-      window.removeEventListener('resize', handleResize);
       topBarManager.cleanup();
-      if (!existingScript && document.body.contains(script)) document.body.removeChild(script);
+      // Only remove if we were the ones who added it
+      if (!existingScript && document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
-  }, [customBg, theme]);
+  }, []);
 
   const randomizeTheme = () => {
     setThemeId(getRandomThemeId(themeId));

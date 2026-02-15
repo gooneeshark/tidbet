@@ -7,6 +7,7 @@ import ChatWidgetUI from './components/ChatWidgetUI';
 import Onboarding from './components/Onboarding';
 import GoostoryEmbed from './components/GoostoryEmbed';
 import AudioCacheManager from './components/AudioCacheManager';
+import { generateGooSpeech, decode, decodeAudioData } from './services/geminiService';
 
 const App: React.FC = () => {
   const [state, setState] = useState<ChatState>({
@@ -28,6 +29,8 @@ const App: React.FC = () => {
   const [pos, setPos] = useState({ x: 24, y: 24 }); // Bottom-right offset
   const dragStartPos = useRef({ x: 0, y: 0 });
   const lastClickTime = useRef(0);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
 
   // Limit for free messages before requiring own API key
   const FREE_MESSAGE_LIMIT = 5;
@@ -80,6 +83,43 @@ const App: React.FC = () => {
     return () => window.removeEventListener('open-api-setup', handleSetupEvent);
   }, []);
 
+  const playSpeech = async (text: string) => {
+    if (isMuted) return;
+    const userApiKey = localStorage.getItem('gemnee_api_key');
+    if (!userApiKey) return;
+
+    try {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      const ctx = audioContextRef.current;
+      if (ctx.state === 'suspended') {
+        await ctx.resume();
+      }
+
+      console.log('Generating speech for:', text);
+      const base64Audio = await generateGooSpeech(text, userApiKey);
+      if (!base64Audio) {
+        console.warn('No audio data received from Gemini');
+        return;
+      }
+      console.log('Audio data received, decoding...');
+
+      const audioData = decode(base64Audio);
+      // Gemini 1.5 Flash/3 Flash TTS format (24kHz Mono PCM)
+      const audioBuffer = await decodeAudioData(audioData, ctx, 24000, 1);
+      console.log('Audio buffer created, duration:', audioBuffer.duration);
+
+      const source = ctx.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(ctx.destination);
+      source.start();
+      console.log('Audio playback started');
+    } catch (error) {
+      console.error('Speech rendering failed:', error);
+    }
+  };
+
   const handleSendMessage = useCallback(async (text: string) => {
     if (!text.trim() || state.isLoading) return;
 
@@ -109,7 +149,7 @@ const App: React.FC = () => {
     try {
       // ใช้ API Key ของผู้ใช้แทน environment variable
       const ai = new GoogleGenAI({ apiKey: userApiKey });
-      const model = 'gemini-3-flash-preview';
+      const model = 'gemini-3-flash-preview'; // ใช้รุ่น 3 ตามที่ต้องการ
 
       const history = state.messages.map(m => ({
         role: m.role,
@@ -146,6 +186,26 @@ const App: React.FC = () => {
             m.id === assistantMessageId ? { ...m, text: fullResponse } : m
           )
         }));
+      }
+
+      // --- จุดที่เพิ่มเพื่อให้มีเสียง ---
+      if (fullResponse) {
+        try {
+          const base64Audio = await generateGooSpeech(fullResponse, userApiKey);
+          if (base64Audio) {
+            const audioData = decode(base64Audio);
+            const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+            
+            // Gemini TTS มักจะส่งมาที่ 24000Hz
+            const buffer = await decodeAudioData(audioData, audioCtx, 24000, 1);
+            const source = audioCtx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioCtx.destination);
+            source.start(0);
+          }
+        } catch (audioErr) {
+          console.error("Audio Playback Error:", audioErr);
+        }
       }
     } catch (error: any) {
       console.error('Gemini Error:', error);
@@ -250,7 +310,7 @@ const App: React.FC = () => {
       <AudioCacheManager />
 
       <div 
-        className="fixed z-[100] flex flex-col items-end pointer-events-none"
+        className="fixed z-[9999] flex flex-col items-end pointer-events-none"
         style={{ bottom: pos.y, right: pos.x }}
       >
         {state.isOpen && (
@@ -270,6 +330,8 @@ const App: React.FC = () => {
                 messageCount={userMessageCount}
                 limit={FREE_MESSAGE_LIMIT}
                 hasKey={hasKey}
+                isMuted={isMuted}
+                onToggleMute={() => setIsMuted(prev => !prev)}
               />
             )}
           </div>
@@ -280,7 +342,7 @@ const App: React.FC = () => {
           onTouchStart={onMouseDown}
           onClick={(e) => {
             const clickDuration = Date.now() - lastClickTime.current;
-            if (clickDuration < 200) {
+            if (clickDuration < 500) {
               toggleWidget();
             }
           }}

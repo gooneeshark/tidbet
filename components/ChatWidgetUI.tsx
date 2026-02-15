@@ -1,4 +1,3 @@
-
 import React, { useState, RefObject } from 'react';
 import { ChatState } from '../types';
 
@@ -12,6 +11,8 @@ interface ChatWidgetUIProps {
   messageCount: number;
   limit: number;
   hasKey: boolean;
+  isMuted: boolean;
+  onToggleMute: () => void;
 }
 
 const ChatWidgetUI: React.FC<ChatWidgetUIProps> = ({ 
@@ -23,7 +24,9 @@ const ChatWidgetUI: React.FC<ChatWidgetUIProps> = ({
   chatContainerRef,
   messageCount,
   limit,
-  hasKey
+  hasKey,
+  isMuted,
+  onToggleMute
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [showSettings, setShowSettings] = useState(false);
@@ -34,6 +37,33 @@ const ChatWidgetUI: React.FC<ChatWidgetUIProps> = ({
       onSendMessage(inputValue);
       setInputValue('');
     }
+  };
+
+  // ฟังก์ชันสำหรับแปลง Text ธรรมดา ให้กลายเป็น Link ที่กดได้
+  const formatMessage = (text: string) => {
+    // Regex สำหรับจับ URL (http หรือ https)
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    
+    // แยกข้อความด้วย URL
+    return text.split(urlRegex).map((part, index) => {
+      // ถ้าส่วนนี้ตรงกับ Regex (เป็น URL) ให้คืนค่าเป็น <a href>
+      if (part.match(urlRegex)) {
+        return (
+          <a 
+            key={index} 
+            href={part} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-orange-300 underline hover:text-orange-100 break-all transition-colors"
+            title="คลิกเพื่อเปิดลิ้งค์"
+          >
+            {part}
+          </a>
+        );
+      }
+      // ถ้าไม่ใช่ URL ก็คืนค่าเป็นข้อความปกติ
+      return part;
+    });
   };
 
   const remainingMessages = Math.max(0, limit - messageCount);
@@ -112,6 +142,23 @@ const ChatWidgetUI: React.FC<ChatWidgetUIProps> = ({
             )}
           </div>
 
+          <button
+            onClick={onToggleMute}
+            className={`transition-colors p-2 rounded-full ${isMuted ? 'text-zinc-500 hover:text-white' : 'text-orange-500 hover:text-orange-400'}`}
+            title={isMuted ? "เปิดเสียง" : "ปิดเสียง"}
+          >
+            {isMuted ? (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9c2.475 2.475 2.475 6.475 0 8.95m-7.071 1.176l-4.707-4.707H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L11.293 16.707z" />
+              </svg>
+            )}
+          </button>
+
           <button 
             onClick={onClose}
             className="text-zinc-400 hover:text-white transition-colors p-2 hover:bg-zinc-800 rounded-full"
@@ -143,7 +190,8 @@ const ChatWidgetUI: React.FC<ChatWidgetUIProps> = ({
               }`}
             >
               <div className="whitespace-pre-wrap break-words leading-relaxed">
-                {msg.text}
+                {/* เรียกใช้ฟังก์ชัน formatMessage แทนการแสดง msg.text ตรงๆ */}
+                {formatMessage(msg.text)}
               </div>
               <div className={`text-[10px] mt-1 font-medium ${msg.role === 'user' ? 'text-orange-200' : 'text-zinc-500'}`}>
                 {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
