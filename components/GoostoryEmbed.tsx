@@ -70,6 +70,33 @@ const GoostoryEmbed: React.FC = () => {
     return Number.isFinite(parsed) ? Math.min(1.5, Math.max(0.3, parsed)) : 0.5;
   });
 
+  // Stable zoom helpers: step 0.05, clamp between 0.3 and 1.5, avoid floating errors
+  const ZOOM_MIN = 0.3;
+  const ZOOM_MAX = 1.5;
+  const ZOOM_STEP = 0.05;
+
+  const clampZoom = (v: number) => Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, v));
+  const snapZoom = (v: number) => {
+    const steps = Math.round(v / ZOOM_STEP);
+    return parseFloat((steps * ZOOM_STEP).toFixed(2));
+  };
+
+  const setZoomValue = (raw: number) => {
+    if (!Number.isFinite(raw)) return;
+    const snapped = snapZoom(raw);
+    setUiZoom(clampZoom(snapped));
+  };
+
+  const increaseZoom = () => setUiZoom((prev) => {
+    const next = snapZoom(prev + ZOOM_STEP);
+    return clampZoom(next);
+  });
+
+  const decreaseZoom = () => setUiZoom((prev) => {
+    const next = snapZoom(prev - ZOOM_STEP);
+    return clampZoom(next);
+  });
+
   useEffect(() => {
     document.documentElement.style.setProperty('--goo-ui-zoom', String(uiZoom));
     localStorage.setItem('goo_ui_zoom', String(uiZoom));
@@ -175,7 +202,7 @@ const GoostoryEmbed: React.FC = () => {
 
   const allSites = useMemo(() => {
     const merged: Shortcut[] = [...SLOT_SITES.map(s => ({ ...s, isUserAdded: false }))];
-    
+
     // Special API Setup Shortcut
     const apiSite: Shortcut = {
       id: 'api-setup-special',
@@ -188,7 +215,7 @@ const GoostoryEmbed: React.FC = () => {
     };
     merged.unshift(apiSite);
 
-    // Add external sites
+    // Merge external sites into the base list
     externalSites.forEach(ext => {
       const idx = merged.findIndex(s => s.name?.toLowerCase() === ext.name?.toLowerCase());
       if (idx !== -1) {
@@ -198,27 +225,17 @@ const GoostoryEmbed: React.FC = () => {
       }
     });
 
-    // Add user shortcuts
-    userShortcuts.forEach(usr => {
-      merged.push({ ...usr, isUserAdded: true });
+    // Prepend user-added shortcuts so they appear first
+    userShortcuts.forEach(us => {
+      merged.unshift({ ...us, isUserAdded: true });
     });
 
-    // Map favorites and sort
-    const mapped = merged.map(site => ({
-      ...site,
-      isFavorite: site.id === 'api-setup-special' || favorites.includes(site.url)
-    }));
-
-    // Sort: Favorites first, then name
-    return mapped.sort((a, b) => {
-      // Force API Setup to stay at the very top
-      if (a.id === 'api-setup-special') return -1;
-      if (b.id === 'api-setup-special') return 1;
-      
-      if (a.isFavorite && !b.isFavorite) return -1;
-      if (!a.isFavorite && b.isFavorite) return 1;
-      return a.name.localeCompare(b.name);
+    // Mark favorites
+    merged.forEach(m => {
+      m.isFavorite = favorites.includes(m.url);
     });
+
+    return merged;
   }, [externalSites, userShortcuts, favorites]);
 
   const filteredSites = allSites.filter(site => 
@@ -335,7 +352,7 @@ const GoostoryEmbed: React.FC = () => {
   return (
     <div 
       className="fixed inset-0 z-0 overflow-y-auto bg-black bg-cover bg-center bg-no-repeat transition-all duration-700"
-      style={customBg ? { backgroundImage: `url(${customBg})` } : {}}
+      style={{ ...(customBg ? { backgroundImage: `url(${customBg})` } : {}), paddingTop: 'calc(40px + var(--goo-topbar-safe-top, 0px))' }}
     >
       {/* Overlay for readability if custom background exists */}
       {customBg && <div className="fixed inset-0 bg-black/40 z-[-1]"></div>}
@@ -345,7 +362,7 @@ const GoostoryEmbed: React.FC = () => {
       {/* Settings Menu */}
       <div
         className="fixed right-4 z-50 flex gap-2"
-        style={{ top: 'calc(1rem + var(--goo-topbar-safe-top, 0px))' }}
+        style={{ top: 'calc(1rem + 40px + var(--goo-topbar-safe-top, 0px))' }}
       >
         <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 shadow-lg">
           <button
