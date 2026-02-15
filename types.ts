@@ -10,6 +10,8 @@ export interface SlotSite {
   name: string;
   url: string;
   tagline: string;
+  logo?: string;
+  image?: string;
 }
 
 export interface ChatState {

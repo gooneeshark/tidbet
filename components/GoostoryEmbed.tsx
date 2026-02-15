@@ -1,7 +1,6 @@
-
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useRef, useMemo, memo } from 'react';
 import { SLOT_SITES } from '../constants';
-import { initTopBarManager } from '../utils/topBarManager';
+import { SlotSite } from '../types';
 import { THEMES, getRandomThemeId, getThemeById, type ThemeId } from '../utils/themes';
 
 // ฟังก์ชันสำหรับดึง Favicon จาก Google
@@ -31,9 +30,13 @@ interface Shortcut {
   isFavorite?: boolean;
 }
 
-const GoostoryEmbed: React.FC = () => {
+interface GoostoryEmbedProps {
+  sites?: SlotSite[];
+}
+
+const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [externalSites, setExternalSites] = useState<Shortcut[]>([]);
+  const [externalSites, setExternalSites] = useState<Shortcut[]>(sites as Shortcut[]);
   const [themeId, setThemeId] = useState<ThemeId>(() => {
     const saved = localStorage.getItem('goo_theme_id');
     return getThemeById(saved).id;
@@ -182,28 +185,8 @@ const GoostoryEmbed: React.FC = () => {
     };
   }, [customBg, theme]);
 
-  // Separate effect for script injection and manager to avoid loops on theme change
-  useEffect(() => {
-    const existingScript = document.querySelector('script[data-top-bar-widget="1"]');
-    const script = existingScript instanceof HTMLScriptElement ? existingScript : document.createElement('script');
-    
-    if (!existingScript) {
-      script.setAttribute('data-top-bar-widget', '1');
-      script.src = `${BUNDLE_WIDGET_BASE}/top-bar-widget.js`;
-      script.async = true;
-      document.body.appendChild(script);
-    }
-
-    const topBarManager = initTopBarManager();
-
-    return () => {
-      topBarManager.cleanup();
-      // Only remove if we were the ones who added it
-      if (!existingScript && document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, []);
+  // No longer needed as we use the native TopBarWidget component in App.tsx
+  useEffect(() => {}, []);
 
   const randomizeTheme = () => {
     setThemeId(getRandomThemeId(themeId));
@@ -215,15 +198,10 @@ const GoostoryEmbed: React.FC = () => {
   };
 
   useEffect(() => {
-    fetch(`${BUNDLE_WIDGET_BASE}/card.json`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.sites) {
-          setExternalSites(data.sites);
-        }
-      })
-      .catch(err => console.error("Failed to load external cards:", err));
-  }, []);
+    if (sites.length > 0) {
+      setExternalSites(sites as Shortcut[]);
+    }
+  }, [sites]);
 
   useEffect(() => {
     localStorage.setItem('user_shortcuts', JSON.stringify(userShortcuts));
@@ -265,10 +243,17 @@ const GoostoryEmbed: React.FC = () => {
     // 3. Merge user-added shortcuts from localStorage
     // If a user shortcut has the same URL/Name as an existing one, update it but keep it "user added" status
     userShortcuts.forEach(us => {
+      const getHost = (u: string) => {
+        try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return ''; }
+      };
+      const usHost = getHost(us.url);
+
       const idx = merged.findIndex(s => 
         (s.url && us.url && s.url.toLowerCase() === us.url.toLowerCase()) || 
-        (s.name && us.name && s.name.toLowerCase() === us.name.toLowerCase())
+        (s.name && us.name && s.name.toLowerCase() === us.name.toLowerCase()) ||
+        (usHost && getHost(s.url) === usHost)
       );
+
       if (idx !== -1) {
         // Prioritize image/logo from merged (external/base) if the user one is just a google favicon
         const current = merged[idx];
@@ -278,8 +263,9 @@ const GoostoryEmbed: React.FC = () => {
           ...current, 
           ...us, 
           // If the user version has a generic google logo, prefer the one from merged (external)
-          logo: isUserJustGoogle ? (current.logo || us.logo) : (us.logo || current.logo),
-          image: us.image || current.image,
+          logo: isUserJustGoogle && current.logo ? current.logo : (us.logo || current.logo),
+          // Prioritize external image if available and user doesn't have a specific one
+          image: current.image || us.image,
           isUserAdded: true 
         };
       } else {
@@ -1059,6 +1045,6 @@ const GoostoryEmbed: React.FC = () => {
       )}
     </div>
   );
-};
+});
 
 export default GoostoryEmbed;

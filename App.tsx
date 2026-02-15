@@ -1,12 +1,13 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { GoogleGenAI } from "@google/genai";
-import { Message, ChatState } from './types';
-import { GOO_GEMNEE_SYSTEM_INSTRUCTION } from './constants';
+import { Message, ChatState, SlotSite } from './types';
+import { getSystemInstruction } from './constants';
 import ChatWidgetUI from './components/ChatWidgetUI';
 import Onboarding from './components/Onboarding';
 import GoostoryEmbed from './components/GoostoryEmbed';
-import AudioCacheManager from './components/AudioCacheManager';
+import AngpaoWidget from './components/AngpaoWidget';
+import TopBarWidget from './components/TopBarWidget';
 import { generateGooSpeech, decode, decodeAudioData } from './services/geminiService';
 
 const App: React.FC = () => {
@@ -31,6 +32,7 @@ const App: React.FC = () => {
   const lastClickTime = useRef(0);
   const audioContextRef = useRef<AudioContext | null>(null);
   const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [availableSites, setAvailableSites] = useState<SlotSite[]>([]);
 
   // Limit for free messages before requiring own API key
   const FREE_MESSAGE_LIMIT = 5;
@@ -42,6 +44,17 @@ const App: React.FC = () => {
       setHasKey(!!savedKey);
     };
     checkKey();
+  }, []);
+
+  useEffect(() => {
+    fetch('https://googem.netlify.app/card.json')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.sites) {
+          setAvailableSites(data.sites);
+        }
+      })
+      .catch(err => console.error("Failed to load external sites for AI context:", err));
   }, []);
 
   useEffect(() => {
@@ -160,7 +173,7 @@ const App: React.FC = () => {
         model,
         contents: [...history, { role: 'user', parts: [{ text }] }],
         config: {
-          systemInstruction: GOO_GEMNEE_SYSTEM_INSTRUCTION,
+          systemInstruction: getSystemInstruction(availableSites.map(s => s.name)),
           temperature: 0.9,
           topP: 0.95,
           topK: 40,
@@ -227,7 +240,7 @@ const App: React.FC = () => {
     } finally {
       setState(prev => ({ ...prev, isLoading: false }));
     }
-  }, [state.messages, state.isLoading, userMessageCount, hasKey]);
+  }, [state.messages, state.isLoading, userMessageCount, hasKey, availableSites]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -306,8 +319,9 @@ const App: React.FC = () => {
 
   return (
     <div className="relative w-full h-screen bg-black">
-      <GoostoryEmbed />
-      <AudioCacheManager />
+      <TopBarWidget sites={availableSites} />
+      <GoostoryEmbed sites={availableSites} />
+      <AngpaoWidget />
 
       <div 
         className="fixed z-[9999] flex flex-col items-end pointer-events-none"

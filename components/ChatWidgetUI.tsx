@@ -1,4 +1,4 @@
-import React, { useState, RefObject } from 'react';
+import React, { useState, RefObject, memo } from 'react';
 import { ChatState } from '../types';
 
 interface ChatWidgetUIProps {
@@ -15,7 +15,7 @@ interface ChatWidgetUIProps {
   onToggleMute: () => void;
 }
 
-const ChatWidgetUI: React.FC<ChatWidgetUIProps> = ({ 
+const ChatWidgetUI: React.FC<ChatWidgetUIProps> = memo(({ 
   state, 
   onClose, 
   onSendMessage,
@@ -242,6 +242,6 @@ const ChatWidgetUI: React.FC<ChatWidgetUIProps> = ({
       </form>
     </div>
   );
-};
+});
 
 export default ChatWidgetUI;
