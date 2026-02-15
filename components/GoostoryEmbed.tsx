@@ -431,7 +431,7 @@ const GoostoryEmbed: React.FC = () => {
       
       setBrowserSize({
         width: Math.max(280, Math.min(window.innerWidth - 20, startWidth + deltaX * 2)),
-        height: Math.max(150, Math.min(window.innerHeight - 80, startHeight - deltaY))
+        height: Math.max(150, Math.min(window.innerHeight * 0.9, startHeight - deltaY))
       });
     };
 
@@ -675,12 +675,15 @@ const GoostoryEmbed: React.FC = () => {
         <div
           className={`fixed transition-all duration-500 ease-in-out ${
             isMiniBrowserModal 
-              ? 'inset-0 z-[140] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl' 
+              ? 'inset-0 z-[9999] flex items-start justify-center p-4 bg-black/80 backdrop-blur-xl' 
               : 'left-1/2 -translate-x-1/2 z-[90]'
           }`}
-          style={!isMiniBrowserModal ? {
+          style={isMiniBrowserModal ? {
+            paddingTop: 'calc(100px + var(--goo-topbar-safe-top, 0px))',
+            paddingBottom: 'calc(40px + var(--goo-topbar-safe-bottom, 0px))'
+          } : {
             bottom: 'calc(12px + var(--goo-topbar-safe-bottom, 0px) + env(safe-area-inset-bottom, 0px))'
-          } : {}}
+          }}
         >
           {/* Main Toggle Button (only visible when NOT modal) */}
           {!isMiniBrowserModal && (
@@ -714,7 +717,7 @@ const GoostoryEmbed: React.FC = () => {
               isResizing ? '' : 'duration-500'
             } ${
               isMiniBrowserModal 
-                ? 'w-full max-w-5xl h-[85vh] opacity-100 scale-100' 
+                ? 'w-full max-w-5xl h-[80vh] opacity-100 scale-100' 
                 : (isAudioSheetOpen ? 'mt-3 opacity-100 scale-100' : 'max-h-0 opacity-0 scale-95 pointer-events-none')
             }`}
             style={!isMiniBrowserModal && isAudioSheetOpen ? { 
