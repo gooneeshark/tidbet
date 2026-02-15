@@ -73,6 +73,27 @@ const GoostoryEmbed: React.FC = () => {
     return Number.isFinite(parsed) ? Math.min(1.5, Math.max(0.3, parsed)) : 0.5;
   });
 
+  // Grid & Shortcut Customization
+  const [gridCols, setGridCols] = useState<number>(() => {
+    const saved = localStorage.getItem('goo_grid_cols');
+    return saved ? Number(saved) : 6;
+  });
+  const [iconSize, setIconSize] = useState<number>(() => {
+    const saved = localStorage.getItem('goo_icon_size');
+    return saved ? Number(saved) : 112; // md:w-28 = 112px
+  });
+  const [fontSize, setFontSize] = useState<number>(() => {
+    const saved = localStorage.getItem('goo_font_size');
+    return saved ? Number(saved) : 16; // md:text-base = 16px
+  });
+  const [showGridSettings, setShowGridSettings] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('goo_grid_cols', String(gridCols));
+    localStorage.setItem('goo_icon_size', String(iconSize));
+    localStorage.setItem('goo_font_size', String(fontSize));
+  }, [gridCols, iconSize, fontSize]);
+
   // Stable zoom helpers: step 0.05, clamp between 0.3 and 1.5, avoid floating errors
   const ZOOM_MIN = 0.3;
   const ZOOM_MAX = 1.5;
@@ -473,6 +494,16 @@ const GoostoryEmbed: React.FC = () => {
           </button>
         </div>
         <button 
+          onClick={() => setShowGridSettings(true)}
+          className="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white transition-all border border-white/10 group shadow-lg"
+          title="ตั้งค่าการแสดงผล"
+        >
+          <svg className="w-5 h-5 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </button>
+        <button 
           onClick={() => fileInputRef.current?.click()}
           className="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white transition-all border border-white/10 group shadow-lg"
           title="เปลี่ยนพื้นหลัง"
@@ -529,7 +560,14 @@ const GoostoryEmbed: React.FC = () => {
         </div>
 
         {/* Shortcuts Grid */}
-        <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-10 w-full max-w-7xl pb-48">
+        <div 
+          className="grid gap-10 w-full max-w-7xl pb-48"
+          style={{ 
+            gridTemplateColumns: `repeat(auto-fill, minmax(${Math.max(120, iconSize + 40)}px, 1fr))`,
+            // User can still limit columns if they want a specific fixed look on large screens
+            maxWidth: gridCols > 5 ? '100%' : `${gridCols * (iconSize + 100)}px`
+          }}
+        >
           
           {/* Add Shortcut Button */}
           <button 
@@ -606,7 +644,10 @@ const GoostoryEmbed: React.FC = () => {
                 </div>
               )}
 
-              <div className="relative w-20 h-20 md:w-28 md:h-28 bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-[2rem] flex items-center justify-center mb-6 shadow-2xl overflow-hidden group-hover:shadow-orange-600/50 group-hover:ring-4 group-hover:ring-orange-500 transition-all duration-700 group-hover:rotate-3">
+              <div 
+                className="relative bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-[2rem] flex items-center justify-center mb-6 shadow-2xl overflow-hidden group-hover:shadow-orange-600/50 group-hover:ring-4 group-hover:ring-orange-500 transition-all duration-700 group-hover:rotate-3"
+                style={{ width: `${iconSize}px`, height: `${iconSize}px` }}
+              >
                 <img 
                   // ลำดับ: 1. รูปที่ระบุมา -> 2. ดึงจาก Google API -> 3. รูป Default
                   src={site.image || site.logo || getGoogleFavicon(site.url) || `${BUNDLE_WIDGET_BASE}/public/logo/default.webp`} 
@@ -625,7 +666,10 @@ const GoostoryEmbed: React.FC = () => {
                   <span className="text-white text-xs font-black tracking-[0.3em] translate-y-3 group-hover:translate-y-0 transition-transform">LET'S GO</span>
                 </div>
               </div>
-              <span className="text-white text-xs md:text-base font-black truncate w-full text-center group-hover:text-orange-400 tracking-tight transition-colors">
+              <span 
+                className="text-white font-black truncate w-full text-center group-hover:text-orange-400 tracking-tight transition-colors"
+                style={{ fontSize: `${fontSize}px` }}
+              >
                 {site.name.toUpperCase()}
               </span>
               <span className="text-[11px] text-zinc-500 font-bold text-center opacity-60 group-hover:opacity-100 transition-all mt-3 line-clamp-1 max-w-[140px] uppercase tracking-tighter">
@@ -847,6 +891,96 @@ const GoostoryEmbed: React.FC = () => {
                   <img src={src} alt={src} className="w-full h-full object-cover" />
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Grid Settings Modal */}
+      {showGridSettings && (
+        <div 
+          className="fixed inset-0 z-[130] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in fade-in zoom-in duration-300"
+          onClick={() => setShowGridSettings(false)}
+        >
+          <div 
+            className="relative w-full max-w-md bg-zinc-900/90 border border-white/10 rounded-[3rem] p-10 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+               type="button"
+               onClick={() => setShowGridSettings(false)}
+               className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-all"
+            >
+               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+               </svg>
+            </button>
+
+            <h2 className="text-2xl font-black text-white mb-8 flex items-center gap-3">
+              <span className="p-2 bg-orange-500 rounded-xl">🎨</span>
+              ตั้งค่าการแสดงผล
+            </h2>
+
+            <div className="space-y-8">
+              {/* Icon Size */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <label className="text-zinc-400 text-xs font-black uppercase tracking-widest">ขนาดไอคอน</label>
+                  <span className="text-orange-400 font-black">{iconSize}px</span>
+                </div>
+                <input 
+                  type="range" min="60" max="200" step="4"
+                  value={iconSize}
+                  onChange={(e) => setIconSize(Number(e.target.value))}
+                  className="w-full accent-orange-500"
+                />
+              </div>
+
+              {/* Font Size */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <label className="text-zinc-400 text-xs font-black uppercase tracking-widest">ขนาดตัวอักษร</label>
+                  <span className="text-orange-400 font-black">{fontSize}px</span>
+                </div>
+                <input 
+                  type="range" min="10" max="32" step="1"
+                  value={fontSize}
+                  onChange={(e) => setFontSize(Number(e.target.value))}
+                  className="w-full accent-orange-500"
+                />
+              </div>
+
+              {/* Max Columns (Approximate for large screens) */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <label className="text-zinc-400 text-xs font-black uppercase tracking-widest">จำนวนช่องสูงสุด (หน้าจอใหญ่)</label>
+                  <span className="text-orange-400 font-black">{gridCols} ช่อง</span>
+                </div>
+                <div className="grid grid-cols-5 gap-2">
+                  {[2, 4, 6, 8, 10].map(n => (
+                    <button
+                      key={n}
+                      onClick={() => setGridCols(n)}
+                      className={`py-2 rounded-xl text-xs font-black transition-all ${
+                        gridCols === n ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'bg-white/5 text-zinc-500 hover:bg-white/10'
+                      }`}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  setIconSize(112);
+                  setFontSize(16);
+                  setGridCols(6);
+                }}
+                className="w-full py-4 rounded-2xl bg-white/5 hover:bg-white/10 text-white text-xs font-black tracking-widest uppercase transition-all mt-4"
+              >
+                รีเซ็ตค่าเริ่มต้น
+              </button>
             </div>
           </div>
         </div>
