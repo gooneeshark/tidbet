@@ -122,7 +122,6 @@ const GoostoryEmbed: React.FC = () => {
   });
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--goo-ui-zoom', String(uiZoom));
     localStorage.setItem('goo_ui_zoom', String(uiZoom));
   }, [uiZoom]);
   
@@ -225,9 +224,10 @@ const GoostoryEmbed: React.FC = () => {
   }, [favorites]);
 
   const allSites = useMemo(() => {
-    const merged: Shortcut[] = [...SLOT_SITES.map(s => ({ ...s, isUserAdded: false }))];
+    // 1. Start with base sites
+    let merged: Shortcut[] = [...SLOT_SITES.map(s => ({ ...s, isUserAdded: false }))];
 
-    // Special API Setup Shortcut
+    // Special API Setup Shortcut - Keep at start or merge if exists
     const apiSite: Shortcut = {
       id: 'api-setup-special',
       name: 'ดูตัวอย่าง',
@@ -235,24 +235,56 @@ const GoostoryEmbed: React.FC = () => {
       image: '/api1.png',
       tagline: 'กดดูภาพตัวอย่าง',
       isUserAdded: false,
-      isFavorite: true // Keep it at the top
+      isFavorite: true
     };
-    merged.unshift(apiSite);
-
-    // Merge external sites into the base list
+    
+    // 2. Merge external sites from card.json
     externalSites.forEach(ext => {
-      const idx = merged.findIndex(s => s.name?.toLowerCase() === ext.name?.toLowerCase());
+      const idx = merged.findIndex(s => 
+        (s.url && ext.url && s.url.toLowerCase() === ext.url.toLowerCase()) || 
+        (s.name && ext.name && s.name.toLowerCase() === ext.name.toLowerCase())
+      );
       if (idx !== -1) {
+        // Update existing site with external data (external wins)
         merged[idx] = { ...merged[idx], ...ext };
       } else {
         merged.push({ ...ext, isUserAdded: false });
       }
     });
 
-    // Prepend user-added shortcuts so they appear first
+    // 3. Merge user-added shortcuts from localStorage
+    // If a user shortcut has the same URL/Name as an existing one, update it but keep it "user added" status
     userShortcuts.forEach(us => {
-      merged.unshift({ ...us, isUserAdded: true });
+      const idx = merged.findIndex(s => 
+        (s.url && us.url && s.url.toLowerCase() === us.url.toLowerCase()) || 
+        (s.name && us.name && s.name.toLowerCase() === us.name.toLowerCase())
+      );
+      if (idx !== -1) {
+        // Prioritize image/logo from merged (external/base) if the user one is just a google favicon
+        const current = merged[idx];
+        const isUserJustGoogle = us.logo?.includes('google.com/s2/favicons');
+        
+        merged[idx] = { 
+          ...current, 
+          ...us, 
+          // If the user version has a generic google logo, prefer the one from merged (external)
+          logo: isUserJustGoogle ? (current.logo || us.logo) : (us.logo || current.logo),
+          image: us.image || current.image,
+          isUserAdded: true 
+        };
+      } else {
+        merged.unshift({ ...us, isUserAdded: true });
+      }
     });
+
+    // 4. Ensure API site is at the front
+    const apiIdx = merged.findIndex(s => s.id === 'api-setup-special');
+    if (apiIdx !== -1) {
+      const [item] = merged.splice(apiIdx, 1);
+      merged.unshift(item);
+    } else {
+      merged.unshift(apiSite);
+    }
 
     // Mark favorites
     merged.forEach(m => {
@@ -433,34 +465,6 @@ const GoostoryEmbed: React.FC = () => {
         style={{ top: 'calc(1rem + 40px + var(--goo-topbar-safe-top, 0px))' }}
       >
         <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 shadow-lg">
-          <button
-            type="button"
-            onClick={() => setUiZoom(z => Math.max(0.3, Math.round((z - 0.05) * 100) / 100))}
-            className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-black transition-all"
-            title="ซูมออก"
-          >
-            -
-          </button>
-          <input
-            type="range"
-            min={0.3}
-            max={1.5}
-            step={0.05}
-            value={uiZoom}
-            onChange={(e) => setUiZoom(Number(e.target.value))}
-            className="w-28 accent-white"
-            title="ปรับซูม"
-          />
-          <button
-            type="button"
-            onClick={() => setUiZoom(0.5)}
-            className="px-2 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white text-[10px] font-black transition-all"
-            title="รีเซ็ตเป็น 50%"
-          >
-            {Math.round(uiZoom * 100)}%
-          </button>
-        </div>
-        <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 shadow-lg">
           <select
             value={themeId}
             onChange={(e) => setThemeId(e.target.value as ThemeId)}
@@ -533,150 +537,139 @@ const GoostoryEmbed: React.FC = () => {
       />
 
       <div className="relative z-10 container mx-auto px-4 py-12 flex flex-col items-center min-h-screen">
-        {/* Header/Logo Placeholder */}
-        <div className="mb-10 text-center">
-          <h1 className="text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br from-orange-400 via-red-600 to-yellow-300 drop-shadow-[0_10px_35px_rgba(234,88,12,0.6)] tracking-tighter italic animate-pulse">
-            GOO GEMNEE
-          </h1>
-          <p className="text-zinc-300 mt-6 text-xs md:text-sm uppercase tracking-[0.6em] font-black opacity-90 drop-shadow-md">The Ultimate Slot Companion</p>
-        </div>
-
-        {/* Search Bar */}
-        <div className="w-full max-w-2xl mb-20 group">
-          <div className="relative group/input">
-            <input 
-              type="text" 
-              placeholder="ค้นหาเว็บไซต์ที่คุณอยากโดน..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-black/40 backdrop-blur-3xl border-2 border-zinc-700/50 focus:border-orange-500 rounded-full px-10 py-6 text-white text-2xl transition-all outline-none shadow-[0_20px_50px_rgba(0,0,0,0.5)] group-hover:border-zinc-500 placeholder:text-zinc-600 font-medium"
-            />
-            <div className="absolute right-8 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within/input:text-orange-500 transition-colors">
-              <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        {/* Shortcuts Grid */}
         <div 
-          className="grid gap-10 w-full max-w-7xl pb-48"
+          className="flex flex-col items-center w-full transition-all duration-500 ease-in-out origin-top"
           style={{ 
-            gridTemplateColumns: `repeat(auto-fill, minmax(${Math.max(120, iconSize + 40)}px, 1fr))`,
-            // User can still limit columns if they want a specific fixed look on large screens
-            maxWidth: gridCols > 5 ? '100%' : `${gridCols * (iconSize + 100)}px`
+            zoom: uiZoom,
+            // Fallback for browsers that don't support zoom property
+            transform: `scale(${uiZoom})`,
+            transformOrigin: 'top center'
           }}
         >
-          
-          {/* Add Shortcut Button */}
-          <button 
-            onClick={() => setShowAddModal(true)}
-            className="group flex flex-col items-center p-8 rounded-[3rem] bg-white/5 hover:bg-orange-600/20 backdrop-blur-2xl transition-all duration-700 border border-white/5 hover:border-orange-500/50 shadow-2xl hover:scale-105 active:scale-95"
-          >
-            <div className="w-16 h-16 md:w-24 md:h-24 bg-zinc-900/90 rounded-[1.5rem] flex items-center justify-center mb-6 transition-all duration-700 group-hover:rotate-[360deg] shadow-inner group-hover:shadow-orange-500/20">
-              <svg className="w-12 h-12 text-zinc-500 group-hover:text-orange-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
+          {/* Header/Logo Placeholder */}
+          <div className="mb-10 text-center">
+            <h1 className="text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br from-orange-400 via-red-600 to-yellow-300 drop-shadow-[0_10px_35px_rgba(234,88,12,0.6)] tracking-tighter italic animate-pulse">
+              GOO GEMNEE
+            </h1>
+            <p className="text-zinc-300 mt-6 text-xs md:text-sm uppercase tracking-[0.6em] font-black opacity-90 drop-shadow-md">The Ultimate Slot Companion</p>
+          </div>
+
+          {/* Search Bar */}
+          <div className="w-full max-w-2xl mb-20 group">
+            <div className="relative group/input">
+              <input 
+                type="text" 
+                placeholder="ค้นหาเว็บไซต์ที่คุณอยากโดน..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-black/40 backdrop-blur-3xl border-2 border-zinc-700/50 focus:border-orange-500 rounded-full px-10 py-6 text-white text-2xl transition-all outline-none shadow-[0_20px_50px_rgba(0,0,0,0.5)] group-hover:border-zinc-500 placeholder:text-zinc-600 font-medium"
+              />
+              <div className="absolute right-8 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within/input:text-orange-500 transition-colors">
+                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
             </div>
-            <span className="text-zinc-400 text-xs md:text-sm font-black group-hover:text-white uppercase tracking-widest">เพิ่มทางลัด</span>
-          </button>
+          </div>
 
-          {filteredSites.map((site, idx) => (
-            <a 
-              key={site.id || idx}
-              href={site.url.startsWith('command://') ? '#' : site.url}
-              onClick={(e) => handleShortcutClick(site, e)}
-              target={site.url.startsWith('command://') ? '_self' : '_blank'}
-              rel="noopener noreferrer"
-              className="shortcut-link group relative flex flex-col items-center p-8 rounded-[3rem] bg-black/30 hover:bg-white/10 backdrop-blur-2xl transition-all duration-700 border border-transparent hover:border-white/20 hover:scale-110 active:scale-95 shadow-[0_25px_60px_rgba(0,0,0,0.4)]"
+          {/* Shortcuts Grid */}
+          <div 
+            className="grid gap-10 w-full max-w-7xl pb-48"
+            style={{ 
+              gridTemplateColumns: `repeat(auto-fill, minmax(${Math.max(120, iconSize + 40)}px, 1fr))`,
+              maxWidth: gridCols > 5 ? '100%' : `${gridCols * (iconSize + 100)}px`
+            }}
+          >
+            
+            {/* Add Shortcut Button */}
+            <button 
+              onClick={() => setShowAddModal(true)}
+              className="group flex flex-col items-center p-8 rounded-[3rem] bg-white/5 hover:bg-orange-600/20 backdrop-blur-2xl transition-all duration-700 border border-white/5 hover:border-orange-500/50 shadow-2xl hover:scale-105 active:scale-95"
             >
-              {/* Top Row Toolbar */}
-              <div className="absolute top-5 left-5 right-5 flex justify-between items-center z-20 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-[-15px] group-hover:translate-y-0">
-                {/* Favorite Heart Button */}
-                <button 
-                  onClick={(e) => toggleFavorite(site.url, e)}
-                  className={`p-2 rounded-full transition-all hover:scale-125 ${site.isFavorite ? 'bg-red-500 text-white shadow-xl shadow-red-500/40' : 'bg-black/60 text-zinc-400 border border-white/10'}`}
-                >
-                  <svg className={`w-5 h-5 ${site.isFavorite ? 'fill-current animate-pulse' : 'fill-none'}`} stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                </button>
+              <div className="w-16 h-16 md:w-24 md:h-24 bg-zinc-900/90 rounded-[1.5rem] flex items-center justify-center mb-6 transition-all duration-700 group-hover:rotate-[360deg] shadow-inner group-hover:shadow-orange-500/20">
+                <svg className="w-12 h-12 text-zinc-500 group-hover:text-orange-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+              </div>
+              <span className="text-zinc-400 text-xs md:text-sm font-black group-hover:text-white uppercase tracking-widest">เพิ่มทางลัด</span>
+            </button>
 
-                {/* Delete Button (User Only) */}
-                {site.isUserAdded && (
+            {filteredSites.map((site, idx) => (
+              <a 
+                key={site.id || idx}
+                href={site.url.startsWith('command://') ? '#' : site.url}
+                onClick={(e) => handleShortcutClick(site, e)}
+                target={site.url.startsWith('command://') ? '_self' : '_blank'}
+                rel="noopener noreferrer"
+                className="shortcut-link group relative flex flex-col items-center p-8 rounded-[3rem] bg-black/30 hover:bg-white/10 backdrop-blur-2xl transition-all duration-700 border border-transparent hover:border-white/20 hover:scale-110 active:scale-95 shadow-[0_25px_60px_rgba(0,0,0,0.4)]"
+              >
+                {/* Top Row Toolbar */}
+                <div className="absolute top-5 left-5 right-5 flex justify-between items-center z-20 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-[-15px] group-hover:translate-y-0">
                   <button 
-                    onClick={(e) => deleteShortcut(site.id!, e)}
-                    className="p-2 bg-zinc-800 text-white rounded-full transition-all hover:bg-red-600 hover:scale-125 border border-white/10 shadow-lg"
+                    onClick={(e) => toggleFavorite(site.url, e)}
+                    className={`p-2 rounded-full transition-all hover:scale-125 ${site.isFavorite ? 'bg-red-500 text-white shadow-xl shadow-red-500/40' : 'bg-black/60 text-zinc-400 border border-white/10'}`}
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                    <svg className={`w-5 h-5 ${site.isFavorite ? 'fill-current animate-pulse' : 'fill-none'}`} stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                   </button>
-                )}
-                {/* Mini-browser Button */}
-                <button
-                  onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      const url = site.url;
-                      navigateTo(url, true);
-                      setIsMiniBrowserModal(true);
-                      setIsAudioSheetOpen(true);
-                    }}
-                  className="p-2 bg-black/60 text-zinc-300 rounded-full transition-all hover:bg-white/10 hover:scale-125 border border-white/5"
-                  title="เปิดในมินิเบราเซอร์"
-                >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h10M4 14h16M4 18h16" />
-                  </svg>
-                </button>
-              </div>
 
-              {/* Heart Badge for Favorites when NOT hovered */}
-              {site.isFavorite && (
-                <div className="absolute top-4 left-4 z-10 group-hover:opacity-0 transition-opacity">
-                  <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shadow-2xl animate-bounce">
-                    <svg className="w-3 h-3 text-white fill-current" viewBox="0 0 24 24">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  {site.isUserAdded && (
+                    <button 
+                      onClick={(e) => deleteShortcut(site.id!, e)}
+                      className="p-2 bg-zinc-800 text-white rounded-full transition-all hover:bg-red-600 hover:scale-125 border border-white/10 shadow-lg"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                  <button
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const url = site.url;
+                        navigateTo(url, true);
+                        setIsMiniBrowserModal(true);
+                        setIsAudioSheetOpen(true);
+                      }}
+                    className="p-2 bg-black/60 text-zinc-300 rounded-full transition-all hover:bg-white/10 hover:scale-125 border border-white/5"
+                    title="เปิดในมินิเบราเซอร์"
+                  >
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h10M4 14h16M4 18h16" />
                     </svg>
+                  </button>
+                </div>
+
+                {site.isFavorite && (
+                  <div className="absolute top-4 left-4 z-10 group-hover:opacity-0 transition-opacity">
+                    <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shadow-2xl animate-bounce">
+                      <svg className="w-3 h-3 text-white fill-current" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
+
+                <div 
+                  className="relative bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-[2rem] flex items-center justify-center mb-6 shadow-2xl overflow-hidden group-hover:shadow-orange-600/50 group-hover:ring-4 group-hover:ring-orange-500 transition-all duration-700 group-hover:rotate-3"
+                  style={{ width: `${iconSize}px`, height: `${iconSize}px` }}
+                >
+                  <img src={site.image || site.logo || getGoogleFavicon(site.url) || `${BUNDLE_WIDGET_BASE}/public/logo/default.webp`} alt={site.name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-125 font-bold" onError={(e) => { const target = e.target as HTMLImageElement; const fallback = `${BUNDLE_WIDGET_BASE}/public/logo/default.webp`; if (target.src !== fallback) { target.src = fallback; } }} />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-700 flex items-center justify-center backdrop-blur-[4px]">
+                    <span className="text-white text-xs font-black tracking-[0.3em] translate-y-3 group-hover:translate-y-0 transition-transform">LET'S GO</span>
                   </div>
                 </div>
-              )}
-
-              <div 
-                className="relative bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-[2rem] flex items-center justify-center mb-6 shadow-2xl overflow-hidden group-hover:shadow-orange-600/50 group-hover:ring-4 group-hover:ring-orange-500 transition-all duration-700 group-hover:rotate-3"
-                style={{ width: `${iconSize}px`, height: `${iconSize}px` }}
-              >
-                <img 
-                  // ลำดับ: 1. รูปที่ระบุมา -> 2. ดึงจาก Google API -> 3. รูป Default
-                  src={site.image || site.logo || getGoogleFavicon(site.url) || `${BUNDLE_WIDGET_BASE}/public/logo/default.webp`} 
-                  alt={site.name}
-                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-125 font-bold"
-                  onError={(e) => {
-                    // ป้องกัน Infinite Loop โดยการเปลี่ยนเป็นรูป Default และหยุดการยิง Error
-                    const target = e.target as HTMLImageElement;
-                    const fallback = `${BUNDLE_WIDGET_BASE}/public/logo/default.webp`;
-                    if (target.src !== fallback) {
-                      target.src = fallback;
-                    }
-                  }}
-                />
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-700 flex items-center justify-center backdrop-blur-[4px]">
-                  <span className="text-white text-xs font-black tracking-[0.3em] translate-y-3 group-hover:translate-y-0 transition-transform">LET'S GO</span>
-                </div>
-              </div>
-              <span 
-                className="text-white font-black truncate w-full text-center group-hover:text-orange-400 tracking-tight transition-colors"
-                style={{ fontSize: `${fontSize}px` }}
-              >
-                {site.name.toUpperCase()}
-              </span>
-              <span className="text-[11px] text-zinc-500 font-bold text-center opacity-60 group-hover:opacity-100 transition-all mt-3 line-clamp-1 max-w-[140px] uppercase tracking-tighter">
-                {site.tagline}
-              </span>
-            </a>
-          ))}
+                <span className="text-white font-black truncate w-full text-center group-hover:text-orange-400 tracking-tight transition-colors" style={{ fontSize: `${fontSize}px` }}>
+                  {site.name.toUpperCase()}
+                </span>
+                <span className="text-[11px] text-zinc-500 font-bold text-center opacity-60 group-hover:opacity-100 transition-all mt-3 line-clamp-1 max-w-[140px] uppercase tracking-tighter">
+                  {site.tagline}
+                </span>
+              </a>
+            ))}
+          </div>
         </div>
 
         <div
@@ -922,6 +915,20 @@ const GoostoryEmbed: React.FC = () => {
             </h2>
 
             <div className="space-y-8">
+              {/* UI Zoom */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <label className="text-zinc-400 text-xs font-black uppercase tracking-widest">ซูมเนื้อหาหลัก (Global Zoom)</label>
+                  <span className="text-orange-400 font-black">{Math.round(uiZoom * 100)}%</span>
+                </div>
+                <input 
+                  type="range" min="0.3" max="1.5" step="0.05"
+                  value={uiZoom}
+                  onChange={(e) => setUiZoom(Number(e.target.value))}
+                  className="w-full accent-orange-500"
+                />
+              </div>
+
               {/* Icon Size */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">

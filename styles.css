@@ -3,15 +3,7 @@
 }
 
 html {
-  zoom: var(--goo-ui-zoom);
-}
-
-@supports not (zoom: 1) {
-  body {
-    transform: scale(var(--goo-ui-zoom));
-    transform-origin: top left;
-    width: calc(100% / var(--goo-ui-zoom));
-  }
+  overflow-x: hidden;
 }
 
 body {
@@ -19,6 +11,7 @@ body {
   background: black;
   font-family: 'Kanit', sans-serif;
   overflow-x: hidden;
+  width: 100%;
 }
 
 canvas {
