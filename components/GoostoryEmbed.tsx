@@ -57,10 +57,13 @@ const GoostoryEmbed: React.FC = () => {
   const [showApiPreview, setShowApiPreview] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [miniBrowserUrl, setMiniBrowserUrl] = useState<string | null>(null);
+  const [isMiniBrowserModal, setIsMiniBrowserModal] = useState(false);
   const [miniBrowserHistory, setMiniBrowserHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
   const [urlInput, setUrlInput] = useState<string>('');
   const [miniBrowserKey, setMiniBrowserKey] = useState<number>(0);
+  const [browserSize, setBrowserSize] = useState({ width: 600, height: 500 });
+  const [isResizing, setIsResizing] = useState(false);
   const [newShortcut, setNewShortcut] = useState({ name: '', url: '' });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const theme = useMemo(() => getThemeById(themeId), [themeId]);
@@ -300,6 +303,7 @@ const GoostoryEmbed: React.FC = () => {
     }
     setMiniBrowserUrl(url);
     setUrlInput(url);
+    // Only increment key if we want a fresh reload, or if no URL was set
     setMiniBrowserKey(k => k + 1);
   };
 
@@ -347,6 +351,49 @@ const GoostoryEmbed: React.FC = () => {
   const clearBg = () => {
     setCustomBg(null);
     localStorage.removeItem('custom_bg');
+  };
+  
+  // Resize logic
+  const handleResizeStart = (e: React.MouseEvent | React.TouchEvent) => {
+    // Only handle primary touch or left-click
+    if ('button' in e && e.button !== 0) return;
+    
+    e.preventDefault();
+    setIsResizing(true);
+    
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    
+    const startX = clientX;
+    const startY = clientY;
+    const startWidth = browserSize.width;
+    const startHeight = browserSize.height;
+
+    const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
+      const currentX = 'touches' in moveEvent ? moveEvent.touches[0].clientX : moveEvent.clientX;
+      const currentY = 'touches' in moveEvent ? moveEvent.touches[0].clientY : moveEvent.clientY;
+      
+      const deltaX = currentX - startX;
+      const deltaY = currentY - startY;
+      
+      setBrowserSize({
+        width: Math.max(280, Math.min(window.innerWidth - 20, startWidth + deltaX * 2)),
+        height: Math.max(150, Math.min(window.innerHeight - 80, startHeight - deltaY))
+      });
+    };
+
+    const handleEnd = () => {
+      setIsResizing(false);
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleMove);
+      window.removeEventListener('touchend', handleEnd);
+    };
+
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchmove', handleMove, { passive: false });
+    window.addEventListener('touchend', handleEnd);
   };
 
   return (
@@ -534,9 +581,10 @@ const GoostoryEmbed: React.FC = () => {
                   onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      // Open the site in the mini-browser overlay (use navigate to track history)
                       const url = site.url;
                       navigateTo(url, true);
+                      setIsMiniBrowserModal(true);
+                      setIsAudioSheetOpen(true);
                     }}
                   className="p-2 bg-black/60 text-zinc-300 rounded-full transition-all hover:bg-white/10 hover:scale-125 border border-white/5"
                   title="เปิดในมินิเบราเซอร์"
@@ -588,95 +636,182 @@ const GoostoryEmbed: React.FC = () => {
         </div>
 
         <div
-          className="fixed left-1/2 -translate-x-1/2 z-[90]"
-          style={{
-            bottom:
-              'calc(12px + var(--goo-topbar-safe-bottom, 0px) + env(safe-area-inset-bottom, 0px))'
-          }}
+          className={`fixed transition-all duration-500 ease-in-out ${
+            isMiniBrowserModal 
+              ? 'inset-0 z-[140] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl' 
+              : 'left-1/2 -translate-x-1/2 z-[90]'
+          }`}
+          style={!isMiniBrowserModal ? {
+            bottom: 'calc(12px + var(--goo-topbar-safe-bottom, 0px) + env(safe-area-inset-bottom, 0px))'
+          } : {}}
         >
-          <button
-            type="button"
-            onClick={() => setIsAudioSheetOpen((v) => {
-              const next = !v;
-              if (next && historyIndex === -1 && !miniBrowserUrl) {
-                navigateTo(MINI_BROWSER_HOME, true);
-              }
-              return next;
-            })}
-            className={`w-[min(92vw,540px)] px-4 py-3 rounded-2xl border ${theme.ui.panelBorder} ${theme.ui.panelBg} backdrop-blur-xl shadow-2xl flex items-center justify-between gap-3`}
-            aria-expanded={isAudioSheetOpen}
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <span className={`inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-r ${theme.ui.accentFrom} ${theme.ui.accentTo} text-white font-black`}>🌐</span>
-              <div className="min-w-0">
-                <div className="text-white font-black text-sm truncate">Mini Browser</div>
-                <div className="text-zinc-400 text-xs truncate">กดเพื่อ {isAudioSheetOpen ? 'ปิด' : 'เปิด'} มินิเบราเซอร์</div>
+          {/* Main Toggle Button (only visible when NOT modal) */}
+          {!isMiniBrowserModal && (
+            <button
+              type="button"
+              onClick={() => setIsAudioSheetOpen((v) => {
+                const next = !v;
+                if (next && historyIndex === -1 && !miniBrowserUrl) {
+                  navigateTo(MINI_BROWSER_HOME, true);
+                }
+                return next;
+              })}
+              className={`w-[min(92vw,540px)] px-4 py-3 rounded-2xl border ${theme.ui.panelBorder} ${theme.ui.panelBg} backdrop-blur-xl shadow-2xl flex items-center justify-between gap-3`}
+              aria-expanded={isAudioSheetOpen}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <span className={`inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-r ${theme.ui.accentFrom} ${theme.ui.accentTo} text-white font-black`}>🌐</span>
+                <div className="min-w-0">
+                  <div className="text-white font-black text-sm truncate">Mini Browser</div>
+                  <div className="text-zinc-400 text-xs truncate">กดเพื่อ {isAudioSheetOpen ? 'ปิด' : 'เปิด'} มินิเบราเซอร์</div>
+                </div>
               </div>
-            </div>
-            <div className={`text-sm font-black transition-all text-transparent bg-clip-text bg-gradient-to-r ${theme.ui.accentFrom} ${theme.ui.accentTo}`}>
-              {isAudioSheetOpen ? 'ลง' : 'ขึ้น'}
-            </div>
-          </button>
+              <div className={`text-sm font-black transition-all text-transparent bg-clip-text bg-gradient-to-r ${theme.ui.accentFrom} ${theme.ui.accentTo}`}>
+                {isAudioSheetOpen ? 'ย่อลง' : 'ขยายขึ้น'}
+              </div>
+            </button>
+          )}
 
           <div
-            className={`mt-3 overflow-hidden transition-all duration-300 ${isAudioSheetOpen ? 'max-h-[95vh] opacity-100' : 'max-h-0 opacity-0'}`}
+            className={`overflow-hidden transition-all ease-in-out ${
+              isResizing ? '' : 'duration-500'
+            } ${
+              isMiniBrowserModal 
+                ? 'w-full max-w-5xl h-[85vh] opacity-100 scale-100' 
+                : (isAudioSheetOpen ? 'mt-3 opacity-100 scale-100' : 'max-h-0 opacity-0 scale-95 pointer-events-none')
+            }`}
+            style={!isMiniBrowserModal && isAudioSheetOpen ? { 
+              width: `min(92vw, ${browserSize.width}px)`, 
+              height: `${browserSize.height}px`,
+              maxHeight: '90vh'
+            } : {}}
           >
-            <div className={`w-[min(92vw,600px)] ${theme.ui.panelBg} backdrop-blur-xl border ${theme.ui.panelBorder} rounded-3xl shadow-2xl overflow-hidden`}>
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
-                <div className="text-white font-black text-sm truncate">Mini Browser</div>
-                <button
-                  type="button"
-                  onClick={() => setIsAudioSheetOpen(false)}
-                  className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-200 border border-white/10 text-xs font-black"
-                >
-                  ปิด
-                </button>
-              </div>
-                  <div
-                    style={{
-                      overflowY: 'auto',
-                      maxHeight: 'calc(95vh - 56px)',
-                      WebkitOverflowScrolling: 'touch'
-                    }}
+            <div className={`relative w-full h-full flex flex-col ${theme.ui.panelBg} backdrop-blur-xl border ${theme.ui.panelBorder} ${isMiniBrowserModal ? 'rounded-[2rem]' : 'rounded-3xl'} shadow-2xl overflow-hidden`}>
+              
+              {/* Resize Handles - Larger Hit Areas for Mobile */}
+              {isAudioSheetOpen && !isMiniBrowserModal && (
+                <>
+                  {/* Left Corner */}
+                  <div 
+                    onMouseDown={handleResizeStart}
+                    onTouchStart={handleResizeStart}
+                    className="absolute top-0 left-0 w-12 h-12 cursor-nw-resize z-[100] group/resize flex items-start justify-start p-2"
                   >
-                    <div className="flex items-center gap-2 p-2 bg-zinc-900 border-b border-white/5">
-                      <button
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); goBack(); }}
-                        className={`px-2 py-1 rounded bg-white/5 text-zinc-200 ${historyIndex <= 0 ? 'opacity-40 cursor-not-allowed' : ''}`}
-                        title="กลับ"
-                        disabled={historyIndex <= 0}
-                      >◀</button>
-                      <button
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); goHome(); }}
-                        className="px-2 py-1 rounded bg-white/5 text-zinc-200"
-                        title="หน้าแรก"
-                      >🏠</button>
-                      <button
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); refreshBrowser(); }}
-                        className="px-2 py-1 rounded bg-white/5 text-zinc-200"
-                        title="รีเฟรช"
-                      >⟳</button>
-
-                      <div className="flex-1">
-                        <form onSubmit={(ev) => { ev.preventDefault(); navigateTo(urlInput, true); }}>
-                          <input
-                            value={urlInput}
-                            onChange={(e) => setUrlInput(e.target.value)}
-                            className="w-full bg-zinc-800 text-sm text-white px-3 py-2 rounded"
-                            placeholder={MINI_BROWSER_HOME}
-                          />
-                        </form>
-                      </div>
-                    </div>
-
-                    <iframe
-                      key={miniBrowserKey + 'sheet'}
-                      src={miniBrowserUrl || MINI_BROWSER_HOME}
-                      style={{ borderRadius: '1px', border: 'none', height: 'calc(76vh - 44px)', width: '100%', maxWidth: '100%', display: 'block' }}
-                      title="Mini Browser"
-                      sandbox="allow-forms allow-scripts allow-same-origin allow-popups"
-                    />
+                    <div className="w-6 h-6 border-t-4 border-l-4 border-white/20 group-hover/resize:border-orange-500 group-active/resize:border-orange-500 transition-colors rounded-tl-md"></div>
                   </div>
+                  
+                  {/* Right Corner */}
+                  <div 
+                    onMouseDown={handleResizeStart}
+                    onTouchStart={handleResizeStart}
+                    className="absolute top-0 right-0 w-12 h-12 cursor-ne-resize z-[100] group/resize flex items-start justify-end p-2"
+                  >
+                    <div className="w-6 h-6 border-t-4 border-r-4 border-white/20 group-hover/resize:border-orange-500 group-active/resize:border-orange-500 transition-colors rounded-tr-md"></div>
+                  </div>
+                  
+                  {/* Top Edge Handle (Thicker for touch) */}
+                  <div 
+                    onMouseDown={handleResizeStart}
+                    onTouchStart={handleResizeStart}
+                    className="absolute top-0 left-12 right-12 h-6 cursor-n-resize z-[100] hover:bg-orange-500/10 active:bg-orange-500/20 transition-colors flex justify-center items-start pt-1"
+                  >
+                    <div className="w-12 h-1 bg-white/10 rounded-full group-hover/resize:bg-orange-500/50"></div>
+                  </div>
+                </>
+              )}
+
+              {/* Browser Header / Toolbar */}
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/20">
+                <div className="flex items-center gap-3">
+                   <span className={`inline-flex items-center justify-center w-6 h-6 rounded-lg bg-gradient-to-r ${theme.ui.accentFrom} ${theme.ui.accentTo} text-white text-[10px] font-black`}>🌐</span>
+                   <div className="text-white font-black text-sm truncate">Mini Browser</div>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                        setBrowserSize({ width: 600, height: 500 }); // Reset size
+                    }}
+                    className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[10px] text-zinc-400 hover:text-white transition-all mr-2"
+                    title="ล้างขนาด"
+                  >
+                    Reset Size
+                  </button>
+                  {isMiniBrowserModal ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsMiniBrowserModal(false)}
+                      className="px-3 py-1.5 rounded-xl bg-orange-500/20 hover:bg-orange-500/40 text-orange-200 border border-orange-500/20 text-xs font-black transition-all"
+                    >
+                      ย่อ (Minimize)
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setIsMiniBrowserModal(true)}
+                      className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white border border-white/10 text-xs font-black transition-all"
+                    >
+                      ขยาย (Full)
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAudioSheetOpen(false);
+                      setIsMiniBrowserModal(false);
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-red-500/20 hover:bg-red-500/40 text-red-200 border border-red-500/20 text-xs font-black transition-all"
+                  >
+                    ปิด
+                  </button>
+                </div>
+              </div>
+
+              {/* Navigation Bar */}
+              <div className="flex items-center gap-2 p-2 bg-zinc-900/50 border-b border-white/5">
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); goBack(); }}
+                  className={`px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-200 transition-all ${historyIndex <= 0 ? 'opacity-30 cursor-not-allowed' : ''}`}
+                  title="กลับ"
+                  disabled={historyIndex <= 0}
+                >◀</button>
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); goHome(); }}
+                  className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-200 transition-all"
+                  title="หน้าแรก"
+                >🏠</button>
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); refreshBrowser(); }}
+                  className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-200 transition-all"
+                  title="รีเฟรช"
+                >⟳</button>
+
+                <div className="flex-1">
+                  <form onSubmit={(ev) => { ev.preventDefault(); navigateTo(urlInput, true); }}>
+                    <input
+                      value={urlInput}
+                      onChange={(e) => setUrlInput(e.target.value)}
+                      className="w-full bg-black/40 text-sm text-white px-4 py-1.5 rounded-lg border border-white/5 focus:border-white/20 outline-none transition-all"
+                      placeholder={MINI_BROWSER_HOME}
+                    />
+                  </form>
+                </div>
+              </div>
+
+              {/* iFrame Content (Single Instance) */}
+              <div className="flex-1 w-full bg-black/20 overflow-hidden relative">
+                {/* Resize Overlay to prevent iframe from stealing mouse events */}
+                {isResizing && <div className="absolute inset-0 z-50 bg-transparent"></div>}
+                
+                <iframe
+                  key={miniBrowserKey}
+                  src={miniBrowserUrl || MINI_BROWSER_HOME}
+                  className="w-full h-full border-none"
+                  title="Mini Browser"
+                  sandbox="allow-forms allow-scripts allow-same-origin allow-popups"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -712,68 +847,6 @@ const GoostoryEmbed: React.FC = () => {
                   <img src={src} alt={src} className="w-full h-full object-cover" />
                 </div>
               ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {miniBrowserUrl && (
-        <div
-          className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in zoom-in duration-300"
-          onClick={() => setMiniBrowserUrl(null)}
-        >
-          <div
-            className="relative w-full max-w-4xl bg-zinc-900/90 border border-zinc-700/50 rounded-[2rem] p-4 sm:p-6 shadow-[0_50px_120px_rgba(0,0,0,0.85)]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              onClick={() => setMiniBrowserUrl(null)}
-              className="absolute top-3 right-3 p-2 rounded-full bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10"
-              title="ปิดมินิเบราเซอร์"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            <div className="w-full h-[76vh] rounded-xl overflow-hidden border border-white/5">
-              <div className="flex items-center gap-2 p-2 bg-zinc-900 border-b border-white/5">
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); goBack(); }}
-                  className={`px-2 py-1 rounded bg-white/5 text-zinc-200 ${historyIndex <= 0 ? 'opacity-40 cursor-not-allowed' : ''}`}
-                  title="กลับ"
-                  disabled={historyIndex <= 0}
-                >◀</button>
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); goHome(); }}
-                  className="px-2 py-1 rounded bg-white/5 text-zinc-200"
-                  title="หน้าแรก"
-                >🏠</button>
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); refreshBrowser(); }}
-                  className="px-2 py-1 rounded bg-white/5 text-zinc-200"
-                  title="รีเฟรช"
-                >⟳</button>
-
-                <div className="flex-1">
-                  <form onSubmit={(ev) => { ev.preventDefault(); navigateTo(urlInput, true); }}>
-                    <input
-                      value={urlInput}
-                      onChange={(e) => setUrlInput(e.target.value)}
-                      className="w-full bg-zinc-800 text-sm text-white px-3 py-2 rounded"
-                      placeholder={MINI_BROWSER_HOME}
-                    />
-                  </form>
-                </div>
-              </div>
-              <iframe
-                key={miniBrowserKey + 'modal'}
-                src={miniBrowserUrl || MINI_BROWSER_HOME}
-                style={{ width: '100%', height: 'calc(76vh - 44px)', border: 'none', display: 'block' }}
-                title="Mini Browser"
-                sandbox="allow-forms allow-scripts allow-same-origin allow-popups"
-              />
             </div>
           </div>
         </div>
