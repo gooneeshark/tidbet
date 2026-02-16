@@ -11,7 +11,6 @@ body {
   background: black;
   font-family: 'Kanit', sans-serif;
   overflow-x: hidden;
-  width: 100%;
 }
 
 canvas {
@@ -64,11 +63,11 @@ canvas {
 }
 
 .icon-grid img {
-  width: 80px;
+  width: 100px;
   height: 80px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.1);
-  padding: 10px;
+  padding: 4px;
   transition: transform 0.3s;
 }
 
@@ -394,12 +393,12 @@ canvas {
   }
 
   .shortcut-icon {
-    width: 64px;
+    width: 84px;
     height: 64px;
   }
 
   .shortcut-icon img {
-    width: 40px;
+    width: 60px;
     height: 40px;
   }
 }
@@ -416,7 +415,7 @@ canvas {
 }
 
 .shortcut-icon {
-  width: 80px;
+  width: 100px;
   height: 80px;
   border-radius: 16px;
   background: var(--card-bg, rgba(255, 255, 255, 0.1));
@@ -429,7 +428,7 @@ canvas {
 }
 
 .shortcut-icon img {
-  width: 48px;
+  width: 68px;
   height: 48px;
   object-fit: contain;
 }

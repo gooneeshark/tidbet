@@ -17,7 +17,7 @@ const getGoogleFavicon = (url: string) => {
 };
 
 const BUNDLE_WIDGET_BASE = 'https://googem.netlify.app';
-const MINI_BROWSER_HOME = 'https://audio.com/goo-nee/collections/goonee';
+const MINI_BROWSER_HOME = 'https://goohubl.vercel.app/'; // เปลี่ยนเป็น URL ที่ต้องการสำหรับหน้าแรกของมินิเบราเซอร์
 
 interface Shortcut {
   id?: string;
