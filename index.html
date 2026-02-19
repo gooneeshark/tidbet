@@ -1,7 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="th">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <title>Goo Gemnee - สุดยอดผู้ช่วยสายปั่น</title>
@@ -21,94 +20,279 @@
     <meta name="theme-color" content="#000000">
     <link rel="apple-touch-icon" href="https://res.cloudinary.com/dvffsjgc3/image/upload/c_scale,h_427,w_800/c_scale,h_70,w_100/Gemnee_zuuobk.png">
 
-    <script>
-      (function () {
-        try {
-          var primary = 'https://res.cloudinary.com/dvffsjgc3/image/upload/c_scale,h_427,w_800/c_scale,h_70,w_100/Gemnee_zuuobk.png';
-          var fallback = '/api1.png';
-          var img = new Image();
-          img.onload = function () {};
-          img.onerror = function () {
-            try {
-              var icons = document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]');
-              for (var i = 0; i < icons.length; i++) {
-                icons[i].setAttribute('href', fallback);
-              }
-            } catch (_) {}
-          };
-          img.src = primary;
-        } catch (_) {}
-      })();
-    </script>
-
     <!-- สำหรับ iOS Safari -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
     <!-- สำหรับ Chrome/Android -->
     <meta name="mobile-web-app-capable" content="yes">
 
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts & Scripts -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-      <script type="importmap">
-{
-  "imports": {
-    "@google/genai": "https://esm.sh/@google/genai@^1.41.0",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "react": "https://esm.sh/react@^19.2.4",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "vite": "https://esm.sh/vite@^7.3.1",
-    "url": "https://esm.sh/url@^0.11.4",
-    "path": "https://esm.sh/path@^0.12.7",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.4"
-  }
-}
-</script>
-  </head>
-  <body>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js" defer></script>
 
+    <script type="importmap">
+    {
+      "imports": {
+        "@google/genai": "https://esm.sh/@google/genai@^1.41.0",
+        "react/": "https://esm.sh/react@^19.2.4/",
+        "react": "https://esm.sh/react@^19.2.4",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+        "vite": "https://esm.sh/vite@^7.3.1",
+        "url": "https://esm.sh/url@^0.11.4",
+        "path": "https://esm.sh/path@^0.12.7",
+        "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.4"
+      }
+    }
+    </script>
+
+    <style>
+        :root { color-scheme: dark; }
+        body {
+            margin: 0;
+            background-color: #000000;
+            color: white;
+            font-family: 'Kanit', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* --- TICKER STYLES --- */
+        .topbar-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100px;
+            z-index: 9999;
+            background: #000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            cursor: grab;
+        }
+        .topbar-container:active { cursor: grabbing; }
+        .ticker-wrapper { display: flex; align-items: center; width: max-content; height: 100%; will-change: transform; }
+        .ticker-item {
+            flex-shrink: 0; width: 240px; height: 100%;
+            display: flex; position: relative; overflow: hidden;
+            text-decoration: none; border-right: 1px solid rgba(255, 255, 255, 0.05);
+            background: #111;
+        }
+        .item-image {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            object-fit: cover; opacity: 0.4; transition: opacity 0.4s ease;
+        }
+        .item-content {
+            position: relative; z-index: 2; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 10px; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%);
+        }
+        .logo-box {
+            position: absolute; top: 8px; left: 8px; width: 32px; height: 32px;
+            background: rgba(255,255,255,0.95); border-radius: 6px;
+            display: flex; align-items: center; justify-content: center; padding: 4px;
+            transform: scale(0.7); transform-origin: top left;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 10;
+        }
+
+        /* --- MAIN APP OFFSET --- */
+        #root {
+            margin-top: 100px; /* ผลักเนื้อหาหลักลงมาให้พ้น Topbar */
+            min-height: calc(100vh - 100px);
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #111 25%, #222 50%, #111 75%);
+            background-size: 200% 100%; animation: skeleton-loading 1.5s infinite;
+        }
+        @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    </style>
+</head>
+<body>
+
+    <!-- INFINITE TOPBAR TICKER -->
+    <nav class="topbar-container" id="topbar">
+        <div class="ticker-wrapper" id="tickerWrapper">
+            <!-- Skeletons while loading -->
+            <div class="ticker-item skeleton"></div>
+            <div class="ticker-item skeleton"></div>
+            <div class="ticker-item skeleton"></div>
+            <div class="ticker-item skeleton"></div>
+            <div class="ticker-item skeleton"></div>
+        </div>
+    </nav>
+
+    <!-- REACT APP ROOT (Goo Gemnee) -->
     <div id="root"></div>
 
+    <!-- Scripts from Goo Gemnee Template -->
     <script type="module" src="/index.tsx"></script>
-
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "fe098cb7-9dbb-4bbb-9193-c92e8ec3ca9e",
-      safari_web_id: "web.onesignal.auto.0b751c21-4ab5-448f-a888-cd2e20e2cfd5",
-      notifyButton: {
-        enable: true,
-        /* เพิ่มส่วนนี้เพื่อแก้ข้อความ */
-        text: {
-          'tip.state.unsubscribed': 'เปิดแจ้งเตือนไว้ เพื่อไม่ให้พลาดรางวัลครั้งถัดไป',
-          'tip.state.subscribed': 'คุณเปิดแจ้งเตือนรางวัลแล้ว',
-          'tip.state.blocked': 'คุณบล็อกการแจ้งเตือนไว้',
-          'message.prenotify': 'เปิดแจ้งเตือนไว้ เพื่อไม่ให้พลาดรางวัลครั้งถัดไป',
-          'dialog.main.title': 'จัดการการแจ้งเตือนรางวัล',
-          'dialog.main.button.subscribe': 'เปิดรับรางวัล',
-          'dialog.main.button.unsubscribe': 'ปิดรับรางวัล'
-        },
-        colors: { // แถม: ปรับสีให้เข้ากับธีมแดง-เหลืองของคุณ
-          'circle.background': '#dc2626',
-          'circle.foreground': '#facc15',
-          'badge.background': '#facc15',
-          'badge.foreground': '#dc2626',
-          'badge.bordercolor': '#ffffff',
-          'pulse.color': '#facc15',
-          'dialog.button.background.hovering': '#b91c1c',
-          'dialog.button.background.active': '#991b1b',
-          'dialog.button.background': '#dc2626',
-          'dialog.button.foreground': '#ffffff'
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        // --- แก้ไข: ตรวจสอบโดเมนก่อนเริ่มทำงาน เพื่อไม่ให้เกิด Error ในหน้า Preview ---
+        const allowedDomain = "goo-nee.netlify.app";
+        if (window.location.hostname !== allowedDomain && window.location.hostname !== "localhost") {
+            console.warn("OneSignal initialization skipped: Domain mismatch.");
+            return;
         }
-      },
-    });
-  });
-</script>
-    <!-- 100% privacy-first analytics -->
-<script data-collect-dnt="true" async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
-<noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif?collect-dnt=true" alt="" referrerpolicy="no-referrer-when-downgrade"/></noscript>
-  </body>
+
+        try {
+            await OneSignal.init({
+              appId: "fe098cb7-9dbb-4bbb-9193-c92e8ec3ca9e",
+              safari_web_id: "web.onesignal.auto.0b751c21-4ab5-448f-a888-cd2e20e2cfd5",
+              notifyButton: {
+                enable: true,
+                text: {
+                  'tip.state.unsubscribed': 'เปิดแจ้งเตือนไว้ เพื่อไม่ให้พลาดรางวัลครั้งถัดไป',
+                  'tip.state.subscribed': 'คุณเปิดแจ้งเตือนรางวัลแล้ว',
+                  'tip.state.blocked': 'คุณบล็อกการแจ้งเตือนไว้',
+                  'message.prenotify': 'เปิดแจ้งเตือนไว้ เพื่อไม่ให้พลาดรางวัลครั้งถัดไป',
+                  'dialog.main.title': 'จัดการการแจ้งเตือนรางวัล',
+                  'dialog.main.button.subscribe': 'เปิดรับรางวัล',
+                  'dialog.main.button.unsubscribe': 'ปิดรับรางวัล'
+                },
+                colors: {
+                  'circle.background': '#dc2626',
+                  'circle.foreground': '#facc15',
+                  'badge.background': '#facc15',
+                  'badge.foreground': '#dc2626',
+                  'badge.bordercolor': '#ffffff',
+                  'pulse.color': '#facc15',
+                  'dialog.button.background.hovering': '#b91c1c',
+                  'dialog.button.background.active': '#991b1b',
+                  'dialog.button.background': '#dc2626',
+                  'dialog.button.foreground': '#ffffff'
+                }
+              },
+            });
+        } catch (err) {
+            console.error("OneSignal Init Error:", err);
+        }
+      });
+    </script>
+    
+    <!-- Privacy Analytics -->
+    <script data-collect-dnt="true" async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+    <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif?collect-dnt=true" alt="" referrerpolicy="no-referrer-when-downgrade"/></noscript>
+
+    <!-- Ticker Logic Scripts -->
+    <script>
+        const API_URL = 'https://googem.netlify.app/card.json';
+        let tickerLoop;
+
+        async function initTicker() {
+            if (typeof gsap === 'undefined') { return setTimeout(initTicker, 50); }
+            try {
+                const res = await fetch(API_URL + '?t=' + Date.now());
+                const data = await res.json();
+                
+                let items = [];
+                if (Array.isArray(data)) items = data;
+                else if (typeof data === 'object') {
+                    items = Object.values(data).find(v => Array.isArray(v)) || [data];
+                }
+
+                if (items.length === 0) return;
+
+                const wrapper = document.getElementById('tickerWrapper');
+                wrapper.innerHTML = '';
+
+                // Create 3 sets for smooth infinite scroll
+                const tickerData = [...items, ...items, ...items];
+                const frag = document.createDocumentFragment();
+
+                tickerData.forEach((item) => {
+                    const a = document.createElement('a');
+                    a.href = item.url || '#';
+                    a.target = "_blank";
+                    a.className = 'ticker-item';
+                    a.innerHTML = `
+                        <img src="${item.image}" class="item-image" loading="lazy" decoding="async">
+                        <div class="logo-box">
+                            <img src="${item.logo}" class="w-full h-full object-contain" onerror="this.src='https://www.google.com/s2/favicons?sz=64&domain=google.com'">
+                        </div>
+                        <div class="item-content">
+                            <span class="text-[10px] font-bold text-white truncate drop-shadow-md">${item.name || 'Untitled'}</span>
+                            <span class="text-[8px] text-slate-300 truncate opacity-80">${item.tagline || ''}</span>
+                        </div>
+                    `;
+                    frag.appendChild(a);
+                });
+                wrapper.appendChild(frag);
+
+                startTickerAnimation();
+            } catch (e) {
+                console.error("Ticker load fail", e);
+            }
+        }
+
+        function startTickerAnimation() {
+            const items = gsap.utils.toArray(".ticker-item");
+            tickerLoop = horizontalLoop(items, { repeat: -1, speed: 0.35, draggable: true });
+            gsap.ticker.add(updateTickerEffects);
+        }
+
+        function updateTickerEffects() {
+            const items = gsap.utils.toArray(".ticker-item");
+            const centerX = window.innerWidth / 2;
+            const threshold = 220;
+
+            items.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                if (rect.right < -100 || rect.left > window.innerWidth + 100) return;
+
+                const itemCenter = rect.left + rect.width / 2;
+                const dist = Math.abs(centerX - itemCenter);
+                const img = item.querySelector('.item-image');
+                const content = item.querySelector('.item-content');
+                const logo = item.querySelector('.logo-box');
+
+                if (dist < threshold) {
+                    const ratio = 1 - (dist / threshold);
+                    gsap.set(img, { opacity: 0.4 + (0.6 * ratio) });
+                    gsap.set(content, { y: -5 * ratio, opacity: 1 });
+                    gsap.set(logo, { scale: 0.7 + (0.2 * ratio) });
+                    item.style.zIndex = "10";
+                } else {
+                    gsap.set(img, { opacity: 0.4 });
+                    gsap.set(content, { y: 0, opacity: 0.7 });
+                    gsap.set(logo, { scale: 0.7 });
+                    item.style.zIndex = "1";
+                }
+            });
+        }
+
+        // GSAP Horizontal Loop Helper
+        function horizontalLoop(items, config) {
+            items = gsap.utils.toArray(items);
+            config = config || {};
+            let tl = gsap.timeline({repeat: config.repeat, paused: config.paused, defaults: {ease: "none"}, onReverseComplete: () => tl.totalTime(tl.rawTime() + tl.duration() * 100)}),
+                length = items.length, startX = items[0].offsetLeft, times = [], widths = [], xPercents = [],
+                curIndex = 0, pixelsPerSecond = (config.speed || 1) * 100,
+                snap = config.snap === false ? v => v : gsap.utils.snap(config.snap || 1),
+                totalWidth, curX, distanceToStart, distanceToLoop, item, i;
+            gsap.set(items, { xPercent: (i, target) => {
+                let w = widths[i] = parseFloat(gsap.getProperty(target, "width", "px"));
+                xPercents[i] = snap(parseFloat(gsap.getProperty(target, "xPercent", "%")) + (gsap.getProperty(target, "x", "px") / w) * 100);
+                return xPercents[i];
+            }});
+            gsap.set(items, {x: 0});
+            totalWidth = items[length-1].offsetLeft + xPercents[length-1] / 100 * widths[length-1] - startX + items[length-1].offsetWidth * gsap.getProperty(items[length-1], "scaleX") + (parseFloat(config.paddingRight) || 0);
+            for (i = 0; i < length; i++) {
+                item = items[i]; curX = xPercents[i] / 100 * widths[i];
+                distanceToStart = item.offsetLeft - startX; distanceToLoop = distanceToStart + widths[i] * gsap.getProperty(item, "scaleX");
+                tl.to(item, {xPercent: snap((curX - distanceToLoop) / widths[i] * 100), duration: distanceToLoop / pixelsPerSecond}, 0)
+                  .fromTo(item, {xPercent: snap((curX - distanceToLoop + totalWidth) / widths[i] * 100)}, {xPercent: xPercents[i], duration: (curX - distanceToLoop + totalWidth - curX) / pixelsPerSecond, immediateRender: false}, distanceToLoop / pixelsPerSecond);
+            }
+            if (config.draggable && typeof(Draggable) !== "undefined") {
+                let proxy = document.createElement("div"), ratio, invRatio, update = () => tl.progress(gsap.utils.wrap(0, 1, parseFloat(gsap.getProperty(proxy, "x")) * ratio));
+                Draggable.create(proxy, { trigger: "#topbar", type: "x", onPress() { this.startProgress = tl.progress(); tl.pause(); ratio = 1 / totalWidth; invRatio = totalWidth; gsap.set(this.target, {x: this.startProgress * invRatio}); }, onDrag: update, onThrowUpdate: update, onRelease: () => tl.play(), inertia: true });
+            }
+            return tl;
+        }
+
+        window.addEventListener('DOMContentLoaded', initTicker);
+    </script>
+</body>
 </html>
