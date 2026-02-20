@@ -1,11 +1,18 @@
 {
   "sites": [
     {
-      "name": "yn9",
-      "logo": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https%3A%2F%2Fi.postimg.cc%2F3xCnsD8V%2Fwps-yn9-new-logo-2-500-185-20241230135545.png",
-      "image": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https%3A%2F%2Fi.postimg.cc%2F9XZTgHFv%2Fscreenshot-1.png",
-      "url": "http://qmdl999.yn9b.vip/?referralCode=wva6410",
-      "tagline": "เล่นแล้วรวย หรือจน? ลองดูสิ 555"
+      "name": "t8",
+      "logo": "https://www.google.com/s2/favicons?sz=128&domain=t8th.one",
+      "image": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https://i.postimg.cc/x1B88txS/e4b61cd8-b2c5-4c2f-84c4-71ec02741f63.png",
+      "url": "https://www.t8th.one/?af=RI9NYA",
+      "tagline": "ไปสวรรค์เร็วขึ้น"
+    },
+    {
+      "name": "vf38",
+      "logo": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dvf3389.com%26sz%3D128",
+      "image": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https://img.alltocon.com/img/ta6prod/promos/e4b61cd8-b2c5-4c2f-84c4-71ec02741f63.png",
+      "url": "https://qmdl888.vf3389.com/?referralCode=ybf5258",
+      "tagline": "เสือเป็นแมว มังกรเป็นตุ๊กแก"
     },
     {
       "name": "y568",
@@ -29,18 +36,18 @@
       "tagline": "AI ช่วยโกง แต่ยังแพ้อยู่ดี"
     },
     {
-      "name": "vf38",
-      "logo": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dvf3389.com%26sz%3D128",
-      "image": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https%3A%2F%2Fi.postimg.cc%2FYqj7qMGP%2Fscreenshot-2.png",
-      "url": "https://qmdl888.vf3389.com/?referralCode=ybf5258",
-      "tagline": "เสือเป็นแมว มังกรเป็นตุ๊กแก"
-    },
-    {
       "name": "thwin",
       "logo": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dwww.343thwin.com%26sz%3D128",
       "image": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https%3A%2F%2Fi.postimg.cc%2Fx84WbNJ3%2Fscreenshot-2.png",
       "url": "http://www.343thwin.com/?r=jpr9061",
       "tagline": "เฮงจริง แต่เฮงให้เจ้าบ้าน"
+    },
+    {
+      "name": "yn9",
+      "logo": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https%3A%2F%2Fi.postimg.cc%2F3xCnsD8V%2Fwps-yn9-new-logo-2-500-185-20241230135545.png",
+      "image": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https%3A%2F%2Fi.postimg.cc%2F9XZTgHFv%2Fscreenshot-1.png",
+      "url": "http://qmdl999.yn9b.vip/?referralCode=wva6410",
+      "tagline": "เล่นแล้วรวย หรือจน? ลองดูสิ 555"
     },
     {
       "name": "thbet",
@@ -57,6 +64,13 @@
       "tagline": "ไปสวรรค์เร็วขึ้น ถ้าเล่นมาก ๆ"
     },
     {
+      "name": "t83",
+      "logo": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dwww.t83.mom%26sz%3D128",
+      "image": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https://i.postimg.cc/SKLbDKys/screenshot-87.png",
+      "url": "https://www.t83.mom/?af=UC1NGX",
+      "tagline": "ไปสวรรค์เร็วขึ้น ถ้าเล่นมาก ๆ"
+    },
+    {
       "name": "th39",
       "logo": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dwww.th34222.com%26sz%3D128",
       "image": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https%3A%2F%2Fi.postimg.cc%2F0jTVsYJy%2Fscreenshot-2.png",
@@ -68,13 +82,6 @@
       "logo": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dwww.th37.club%26sz%3D128",
       "image": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https://self-imagex.image-etc.co/SHARKYWINCO/setting-banner-image/1726843868669069978Lf6OxFBx03/SK%20%E0%B8%81%E0%B8%87%E0%B8%A5%E0%B9%89%E0%B8%AD%201920x600%20(1).png",
       "url": "http://www.th37.club/?r=juv0033",
-      "tagline": "ไปสวรรค์เร็วขึ้น ถ้าเล่นมาก ๆ"
-    },
-    {
-      "name": "t83",
-      "logo": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dwww.t83.mom%26sz%3D128",
-      "image": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https://i.postimg.cc/SKLbDKys/screenshot-87.png",
-      "url": "https://www.t83.mom/?af=UC1NGX",
       "tagline": "ไปสวรรค์เร็วขึ้น ถ้าเล่นมาก ๆ"
     },
     {
