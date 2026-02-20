@@ -51,7 +51,7 @@ setInterval(draw, 50);
 // Load shortcuts from JSON
 async function loadShortcuts() {
   try {
-    const response = await fetch('https://googem.netlify.app/card.json');
+    const response = await fetch('/card.json');
     const data = await response.json();
     const container = document.getElementById('shortcutsContainer');
     
@@ -61,9 +61,9 @@ async function loadShortcuts() {
       shortcut.innerHTML = `
         <a href="${site.url}" target="_blank" rel="noopener noreferrer">
           <div class="shortcut-icon">
-            <img src="${site.image || site.logo || `https://www.google.com/s2/favicons?domain=${new URL(site.url).hostname}&sz=128`}" 
+            <img src="${site.image || site.logo}" 
                  alt="${site.name}"
-                 onerror="this.src='https://googem.netlify.app/public/logo/default.webp'">
+                 onerror="if(!this.dataset.handled){this.dataset.handled=true;this.src='/logo/default.webp';}">
           </div>
           <div class="shortcut-name">${site.name}</div>
         </a>
@@ -222,7 +222,7 @@ submitBtn.addEventListener('click', () => {
           <div class="shortcut-icon">
             <img src="https://www.google.com/s2/favicons?domain=${domain}&sz=128" 
                  alt="${name}"
-                 onerror="this.src='https://googem.netlify.app/public/logo/default.webp'">
+                 onerror="if(!this.dataset.handled){this.dataset.handled=true;this.src='/logo/default.webp';}">
           </div>
           <div class="shortcut-name">${name}</div>
         </a>
@@ -312,9 +312,9 @@ function loadUserShortcuts() {
     shortcutEl.innerHTML = `
       <a href="${shortcut.url}" target="_blank" rel="noopener noreferrer">
         <div class="shortcut-icon">
-          <img src="https://www.google.com/s2/favicons?domain=${domain}&sz=128" 
+          <img src="${shortcut.image || shortcut.logo || `https://www.google.com/s2/favicons?domain=${domain}&sz=128`}" 
                alt="${shortcut.name}"
-               onerror="this.src='https://googem.netlify.app/public/logo/default.webp'">
+               onerror="if(!this.dataset.handled){this.dataset.handled=true;this.src='/logo/default.webp';}">
         </div>
         <div class="shortcut-name">${shortcut.name}</div>
       </a>

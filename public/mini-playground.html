@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ฐานข้อมูลเว็บโกง - ระวังภัย</title>
+    <style>
+        :root {
+            --primary: #ef4444;
+            --bg: #18181b;
+            --surface: #27272a;
+            --text: #ffffff;
+            --border: #3f3f46;
+        }
+
+        body {
+            margin: 0;
+            padding: 1.5rem;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            box-sizing: border-box;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.75rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-box {
+            position: relative;
+            flex-grow: 1;
+            max-width: 500px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border-radius: 9999px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.5;
+        }
+
+        .report-btn {
+            background: linear-gradient(135deg, var(--primary), #b91c1c);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            white-space: nowrap;
+        }
+
+        .report-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        .warning-card {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--primary);
+            padding: 1.25rem;
+            border-radius: 1rem;
+            line-height: 1.5;
+        }
+
+        .warning-card h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .warning-card ul {
+            margin: 0;
+            padding-left: 1.25rem;
+            color: #fca5a5;
+        }
+
+        .scam-list {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+
+        .scam-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .scam-item:hover {
+            border-color: var(--primary);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .scam-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ffbba6;
+            margin-bottom: 0.25rem;
+        }
+
+        .scam-reason {
+            font-size: 0.875rem;
+            color: #a1a1aa;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #a1a1aa;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-actions">
+        <h1>⚠️ ฐานข้อมูลเว็บโกง</h1>
+        <a href="mailto:gooneeshark@gmail.com?subject=แจ้งเบาะแสเว็บพนันโกง&body=1.ชื่อเว็บทีโกง:%0D%0A2.ลิ้งค์หน้าเว็บ:%0D%0A3.พฤติกรรมการโกง:%0D%0A(แนบหลักฐานการโอน/แชท ถ้ามี)" target="_blank" class="report-btn">
+            🚨 แจ้งเว็บโกง
+        </a>
+    </div>
+
+    <div class="warning-card">
+        <h3>🛡️ วิธีปฏิบัติเมื่อรู้ตัวว่า(กำลังจะ)ถูกโกง</h3>
+        <ul>
+            <li><strong>หยุดโอนเงินเพิ่มเด็ดขาด:</strong> ไม่ว่าจะอ้างค่าปลดล็อค ค่าธรรมเนียม หรือภาษี</li>
+            <li><strong>แคปรูปหลักฐานทั้งหมด:</strong> หน้าเว็บ, แชทที่คุย, สลิปโอนเงิน (ให้เห็นบัญชีปลายทางชัดเจน)</li>
+            <li><strong>ห้ามโวยวายให้แอดมินรู้ตัว:</strong> แกล้งทำเป็นจะหาเงินมาโอนเพิ่ม เพื่อถ่วงเวลาไม่ให้มันบล็อคแล้วดึงข้อมูลออกมา</li>
+            <li><strong>แจ้งอายัดบัญชี:</strong> หากตกเป็นเหยื่อ สามารถแจ้งความออนไลน์ได้ที่ www.thaipoliceonline.com หรือโทรสายด่วน 1441 ตลอด 24 ชั่วโมง(อย่ากลัวโดนค่าปรับ คนเล่นเสียค่าปรับแค่500บาท)</li>
+        </ul>
+    </div>
+
+    <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="ค้นหาชื่อเว็บที่มีประวัติโกง..." oninput="filterSites()">
+    </div>
+
+    <div class="scam-list" id="scamList">
+        <!-- ข้อมูลเว็บโกงจะถูกแทรกที่นี่ -->
+    </div>
+    <div class="empty-state" id="emptyState">
+        ไม่พบข้อมูลเว็บที่ค้นหา.<br>หากเว็บนี้โกง รบกวนกดปุ่ม "แจ้งเว็บโกง" ด้านบน
+    </div>
+
+    <script>
+        const scamSites = [
+                { name: "FinzaBet", reason: "ถอนยอดใหญ่ไม่ได้ อ้างเกมบัค จ่ายไม่เต็มยอด" },
+    { name: "Topfunz", reason: "แจ้งถอนแล้วแอดมินไม่ทำรายการ ไม่ตอบแชท" },
+    { name: "MONEYPLUS99", reason: "อ้างระบบถอนขัดข้อง สุดท้ายไม่ตอบแชท น่าจะบล็อคยูส" },
+    { name: "168lt", reason: "ถูกหวยไม่จ่าย กดยกเลิกและลบโพย แชทไม่ตอบ" },
+    { name: "juad123x", reason: "อ้างยอดฝากไม่สมดุล หลอกให้เติมเงินเพิ่มเพื่อปลดลิมิต" },
+    { name: "UFA24MAX", reason: "ถอนไม่ได้ อ้างใช้บอทเล่น คืนทุนตัดกำไรทิ้ง" },
+    { name: "ไทยลอตเตอรี่", reason: "ถูกหวย 4 ตัวตรงไม่จ่าย ปิดยูสหนี" },
+    { name: "g-pro", reason: "ถอนไม่ได้ อ้างคนถอนเยอะ สุดท้ายแอดมินหายไม่ตอบ" },
+    { name: "ALPHA888", reason: "ถอนไม่ได้ อ้างเล่นผิดปกติ คืนแค่ทุน" },
+    { name: "TKSLOT", reason: "ฝากเงินแล้วยอดไม่เข้า ไม่มีแอดมินตอบ" },
+    { name: "cool88", reason: "ถูกหวยไม่จ่าย อ้างเลขล็อค ยกเลิกโพยอัตโนมัติ" },
+    { name: "winbox88thai", reason: "แจ้งถอนแล้วปิดยูสทันที" },
+    { name: "omg555", reason: "กดถอนแล้วเข้าระบบไม่ได้ แอดมินไม่ตอบไลน์" },
+    { name: "Great798.site", reason: "เล่นสล็อตแตกยอด 89,742 ถอน 50,000 ไม่ได้ อ้างธนาคารขัดข้อง/ตรวจสอบ เลื่อนจ่ายหลายรอบ สุดท้ายแอดมินหาย" },
+    { name: "Luca123.ctmx.online", reason: "เว็บบิด ถอนเงินไม่ได้หลังฝากและเล่นยอดสูง" },
+    { name: "หวยใต้ดินออนไลน์", reason: "ถูกหวยไม่จ่าย ยกเลิกถอน ไลน์ไม่ตอบ โกงยอดหลายพัน" },
+    { name: "หวยสมหวัง", reason: "ถูกหวยไม่จ่าย โกงยอด 4,000 บาท เล่นครั้งแรกเจอโกงทันที" },
+    { name: "UFA24MAX", reason: "ถอนยอดใหญ่ไม่ได้ อ้างใช้บอทเล่น คืนเฉพาะทุน ตัดกำไรทิ้ง (เคสยอด 78k+)" },
+    { name: "หวยไทยออนไลน์", reason: "ถูกหวยหลายหมื่นไม่จ่าย อ้างระบบล้ม/ตรวจสอบ สุดท้ายปิดหนี" },
+    { name: "SharkBlueSlot", reason: "เปลี่ยนธีมเว็บเป็นฉลามสีน้ำเงิน ถอนยอดใหญ่ไม่ได้ แอดมินเลื่อนเหตุผลตลอด" },
+    { name: "EU9", reason: "ถอนยอดใหญ่ไม่ได้ อ้างเกมบัค จ่ายไม่เต็มยอด" },
+    { name: "Siam55", reason: "แจ้งถอนแล้วแอดมินไม่ทำรายการ ไม่ตอบแชท" },
+    { name: "77ruay", reason: "อ้างระบบถอนขัดข้อง สุดท้ายไม่ตอบแชท น่าจะบล็อคยูส" },
+    { name: "77neko", reason: "ถูกหวยไม่จ่าย กดยกเลิกและลบโพย แชทไม่ตอบ" },
+    { name: "77w", reason: "อ้างยอดฝากไม่สมดุล หลอกให้เติมเงินเพิ่มเพื่อปลดลิมิต" },
+    { name: "77slot", reason: "ถอนไม่ได้ อ้างใช้บอทเล่น คืนทุนตัดกำไรทิ้ง" },
+    { name: "puntaek789", reason: "ถูกหวย 4 ตัวตรงไม่จ่าย ปิดยูสหนี" },
+    { name: "OHANA888", reason: "ถอนไม่ได้ อ้างคนถอนเยอะ สุดท้ายแอดมินหายไม่ตอบ" },
+    { name: "OHANA999", reason: "ถอนไม่ได้ อ้างเล่นผิดปกติ คืนแค่ทุน" },
+    { name: "star99", reason: "ยอดถอนนิ่งหลายวัน ไม่มีแอดมินตอบ" },
+    { name: "act96", reason: "ถอน 2 หมื่นปิดยูส เล่นค่ายFC แอดมินบอกเดิมพันผิดปกติค่ายPG ตลกวนหลูบ" },
+    { name: "win77th", reason: "แจ้งถอนแล้วปิดยูสทันที" },
+    { name: "siam8th", reason: "กดถอนแล้วเข้าระบบไม่ได้ แอดมินไม่ตอบไลน์" },
+    { name: "HuyTaiDin", reason: "หวยใต้ดินโกง หลีกเลี่ยงการจ่ายเงินรางวัล" }
+        ];
+
+        function renderSites(sites) {
+            const list = document.getElementById('scamList');
+            const emptyState = document.getElementById('emptyState');
+            
+            list.innerHTML = '';
+            
+            if(sites.length === 0) {
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+                sites.forEach(site => {
+                    const el = document.createElement('div');
+                    el.className = 'scam-item';
+                    el.innerHTML = `
+                        <div class="scam-name">${site.name}</div>
+                        <div class="scam-reason">❌ ${site.reason}</div>
+                    `;
+                    list.appendChild(el);
+                });
+            }
+        }
+
+        function filterSites() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = scamSites.filter(site => 
+                site.name.toLowerCase().includes(query) || 
+                site.reason.toLowerCase().includes(query)
+            );
+            renderSites(filtered);
+        }
+
+        // โหลดครั้งแรก
+        renderSites(scamSites.sort((a,b) => a.name.localeCompare(b.name)));
+    </script>
+</body>
+</html>

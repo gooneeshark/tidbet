@@ -7,7 +7,6 @@ import ChatWidgetUI from './components/ChatWidgetUI';
 import Onboarding from './components/Onboarding';
 import GoostoryEmbed from './components/GoostoryEmbed';
 import AngpaoWidget from './components/AngpaoWidget';
-import TopBarWidget from './components/TopBarWidget';
 import { generateGooSpeech, decode, decodeAudioData } from './services/geminiService';
 
 const App: React.FC = () => {
@@ -47,7 +46,7 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    fetch('https://googem.netlify.app/card.json')
+    fetch('/card.json')
       .then(res => res.json())
       .then(data => {
         if (data && data.sites) {
@@ -319,7 +318,7 @@ const App: React.FC = () => {
 
   return (
     <div className="relative w-full h-screen bg-black">
-      <TopBarWidget sites={availableSites} />
+
       <GoostoryEmbed sites={availableSites} />
       <AngpaoWidget />
 
@@ -369,7 +368,8 @@ const App: React.FC = () => {
             onError={(e) => {
               const img = e.target as HTMLImageElement;
               const fallback = "https://raw.githubusercontent.com/P200p/bundle_widget/main/public/logo/gemnee.webp";
-              if (img.src === fallback) return;
+              if (img.dataset.errorHandled) return;
+              img.dataset.errorHandled = "true";
               img.onerror = null;
               img.src = fallback;
             }}

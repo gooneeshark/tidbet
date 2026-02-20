@@ -81,7 +81,8 @@ const ChatWidgetUI: React.FC<ChatWidgetUIProps> = memo(({
               onError={(e) => {
                 const img = e.target as HTMLImageElement;
                 const fallback = "https://raw.githubusercontent.com/P200p/bundle_widget/main/public/logo/gemnee.webp";
-                if (img.src === fallback) return;
+                if (img.dataset.errorHandled) return;
+                img.dataset.errorHandled = "true";
                 img.onerror = null;
                 img.src = fallback;
               }}

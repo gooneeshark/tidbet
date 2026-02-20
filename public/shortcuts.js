@@ -915,7 +915,7 @@ function loadShortcuts() {
 // Load JSON shortcuts and cache
 async function loadJsonShortcuts() {
     try {
-        const res = await fetch('https://googem.netlify.app/card.json');
+        const res = await fetch('/card.json');
         const data = await res.json();
         jsonShortcutsCache = Array.isArray(data?.sites) ? data.sites : [];
     } catch (e) {

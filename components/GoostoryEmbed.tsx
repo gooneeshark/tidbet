@@ -16,8 +16,8 @@ const getGoogleFavicon = (url: string) => {
   }
 };
 
-const BUNDLE_WIDGET_BASE = 'https://googem.netlify.app';
-const MINI_BROWSER_HOME = 'https://goohubl.vercel.app/'; // เปลี่ยนเป็น URL ที่ต้องการสำหรับหน้าแรกของมินิเบราเซอร์
+const BUNDLE_WIDGET_BASE = '';
+const MINI_BROWSER_HOME = '/mini-playground.html'; // ลิงก์ไปที่ไฟล์ Mini Playground ในเครื่องแทน
 
 interface Shortcut {
   id?: string;
@@ -185,7 +185,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
     };
   }, [customBg, theme]);
 
-  // No longer needed as we use the native TopBarWidget component in App.tsx
+  // No longer needed as we use the GSAP topbar in index.html
   useEffect(() => {}, []);
 
   const randomizeTheme = () => {
@@ -335,6 +335,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
     try {
       if (!raw) return raw;
       if (/^https?:\/\//i.test(raw)) return raw;
+      if (raw.startsWith('/')) return window.location.origin + raw;
       return `https://${raw}`;
     } catch {
       return raw;
@@ -448,7 +449,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
   return (
     <div 
       className="fixed inset-0 z-0 overflow-y-auto bg-black bg-cover bg-center bg-no-repeat transition-all duration-700"
-      style={{ ...(customBg ? { backgroundImage: `url(${customBg})` } : {}), paddingTop: 'calc(40px + var(--goo-topbar-safe-top, 0px))' }}
+      style={{ ...(customBg ? { backgroundImage: `url(${customBg})` } : {}), paddingTop: 'calc(100px + var(--goo-topbar-safe-top, 0px))' }}
     >
       {/* Overlay for readability if custom background exists */}
       {customBg && <div className="fixed inset-0 bg-black/40 z-[-1]"></div>}
@@ -458,7 +459,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
       {/* Settings Menu */}
       <div
         className="fixed right-4 z-50 flex gap-2"
-        style={{ top: 'calc(1rem + 40px + var(--goo-topbar-safe-top, 0px))' }}
+        style={{ top: 'calc(1rem + 100px + var(--goo-topbar-safe-top, 0px))' }}
       >
         <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 shadow-lg">
           <select
@@ -652,7 +653,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
                   className="relative bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-[2rem] flex items-center justify-center mb-6 shadow-2xl overflow-hidden group-hover:shadow-orange-600/50 group-hover:ring-4 group-hover:ring-orange-500 transition-all duration-700 group-hover:rotate-3"
                   style={{ width: `${iconSize}px`, height: `${iconSize}px` }}
                 >
-                  <img src={site.image || site.logo || getGoogleFavicon(site.url) || `${BUNDLE_WIDGET_BASE}/public/logo/default.webp`} alt={site.name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-125 font-bold" onError={(e) => { const target = e.target as HTMLImageElement; const fallback = `${BUNDLE_WIDGET_BASE}/public/logo/default.webp`; if (target.src !== fallback) { target.src = fallback; } }} />
+                  <img src={site.image || site.logo || `${BUNDLE_WIDGET_BASE}/logo/default.webp`} alt={site.name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-125 font-bold" onError={(e) => { const target = e.target as HTMLImageElement; const fallback = `${BUNDLE_WIDGET_BASE}/logo/default.webp`; if (target.dataset.errorHandled) return; target.dataset.errorHandled = "true"; target.onerror = null; target.src = fallback; }} />
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-700 flex items-center justify-center backdrop-blur-[4px]">
                     <span className="text-white text-xs font-black tracking-[0.3em] translate-y-3 group-hover:translate-y-0 transition-transform">LET'S GO</span>
                   </div>
