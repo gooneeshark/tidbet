@@ -8,6 +8,7 @@ import Onboarding from './components/Onboarding';
 import GoostoryEmbed from './components/GoostoryEmbed';
 import AngpaoWidget from './components/AngpaoWidget';
 import { generateGooSpeech, decode, decodeAudioData } from './services/geminiService';
+import { initNotifications } from './services/notificationService';
 
 const App: React.FC = () => {
   const [state, setState] = useState<ChatState>({
@@ -63,6 +64,11 @@ const App: React.FC = () => {
     };
     window.addEventListener('gemnee-api-key-changed', sync as EventListener);
     return () => window.removeEventListener('gemnee-api-key-changed', sync as EventListener);
+  }, []);
+
+  useEffect(() => {
+    // Start the global notification listener loop
+    initNotifications();
   }, []);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -363,7 +369,7 @@ const App: React.FC = () => {
           className={`w-20 h-20 pointer-events-auto rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.5)] flex items-center justify-center transform hover:scale-110 transition-transform duration-300 active:scale-90 group relative overflow-hidden bg-zinc-900 border-4 border-orange-600 ${isDragging ? 'cursor-grabbing scale-110' : 'cursor-grab'}`}
         >
           <img 
-            src="Gemnee.png" 
+            src="Gemnee.webp" 
             alt="Mascot" 
             className="w-full h-full object-cover p-1 transition-transform group-hover:rotate-12"
             onError={(e) => {

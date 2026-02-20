@@ -41,7 +41,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onSelectKey, onClose }) => {
       <div className="flex-1 overflow-y-auto p-6 flex flex-col items-center text-center">
         <div className="w-full mb-6 group relative overflow-hidden rounded-xl border border-zinc-700 bg-zinc-800">
           <img 
-            src="/api1.png" 
+            src="/api1.webp" 
             alt="API Key Setup"
             loading="lazy"
             decoding="async"

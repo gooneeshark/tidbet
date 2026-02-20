@@ -75,7 +75,7 @@ const ChatWidgetUI: React.FC<ChatWidgetUIProps> = memo(({
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-orange-600 flex items-center justify-center overflow-hidden border-2 border-orange-500 shadow-lg shadow-orange-900/40">
              <img 
-              src="Gemnee.png" 
+              src="Gemnee.webp" 
               alt="Mascot" 
               loading="lazy"
               decoding="async"
