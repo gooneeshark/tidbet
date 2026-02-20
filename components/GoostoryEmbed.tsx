@@ -428,7 +428,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
       
       setBrowserSize({
         width: Math.max(280, Math.min(window.innerWidth - 20, startWidth + deltaX * 2)),
-        height: Math.max(150, Math.min(window.innerHeight * 0.9, startHeight - deltaY))
+        height: Math.max(150, Math.min(window.innerHeight * 0.8, startHeight - deltaY))
       });
     };
 
@@ -676,10 +676,10 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
         </div>
 
         <div
-          className={`fixed transition-all duration-500 ease-in-out ${
+          className={`fixed transition-all duration-500 ease-in-out flex flex-col items-center ${
             isMiniBrowserModal 
-              ? 'inset-0 z-[9999] flex items-start justify-center p-4 bg-black/80 backdrop-blur-xl' 
-              : 'left-1/2 -translate-x-1/2 z-[90]'
+              ? 'inset-0 z-[9999] justify-center p-4 bg-black/80 backdrop-blur-xl' 
+              : 'left-0 w-full z-[90] pointer-events-none'
           }`}
           style={isMiniBrowserModal ? {
             paddingTop: 'calc(100px + var(--goo-topbar-safe-top, 0px))',
@@ -699,7 +699,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
                 }
                 return next;
               })}
-              className={`w-[min(92vw,540px)] px-4 py-3 rounded-2xl border ${theme.ui.panelBorder} ${theme.ui.panelBg} backdrop-blur-xl shadow-2xl flex items-center justify-between gap-3`}
+              className={`w-[min(92vw,540px)] px-4 py-3 rounded-2xl border ${theme.ui.panelBorder} ${theme.ui.panelBg} backdrop-blur-xl shadow-2xl flex items-center justify-between gap-3 pointer-events-auto`}
               aria-expanded={isAudioSheetOpen}
             >
               <div className="flex items-center gap-3 min-w-0">
@@ -716,17 +716,17 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
           )}
 
           <div
-            className={`overflow-hidden transition-all ease-in-out ${
+            className={`overflow-hidden transition-all ease-in-out pointer-events-auto ${
               isResizing ? '' : 'duration-500'
             } ${
               isMiniBrowserModal 
                 ? 'w-full max-w-5xl h-[80vh] opacity-100 scale-100' 
-                : (isAudioSheetOpen ? 'mt-3 opacity-100 scale-100' : 'max-h-0 opacity-0 scale-95 pointer-events-none')
+                : (isAudioSheetOpen ? 'mt-3 opacity-100 scale-100 pointer-events-auto' : 'max-h-0 opacity-0 scale-95 pointer-events-none')
             }`}
             style={!isMiniBrowserModal && isAudioSheetOpen ? { 
               width: `min(92vw, ${browserSize.width}px)`, 
               height: `${browserSize.height}px`,
-              maxHeight: '90vh'
+              maxHeight: '80vh'
             } : {}}
           >
             <div className={`relative w-full h-full flex flex-col ${theme.ui.panelBg} backdrop-blur-xl border ${theme.ui.panelBorder} ${isMiniBrowserModal ? 'rounded-[2rem]' : 'rounded-3xl'} shadow-2xl overflow-hidden`}>
