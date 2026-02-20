@@ -194,6 +194,8 @@ const TopBarWidget: React.FC<TopBarWidgetProps> = ({ sites }) => {
                 <img 
                   src={site.logo || `https://www.google.com/s2/favicons?domain=${new URL(site.url).hostname}&sz=64`} 
                   alt={site.name} 
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -250,7 +252,7 @@ const TopBarWidget: React.FC<TopBarWidgetProps> = ({ sites }) => {
             <div className="p-8">
               <div className="flex flex-col items-center gap-4 mb-8">
                 <div className="w-24 h-24 rounded-3xl bg-zinc-100 border-4 border-zinc-100 shadow-xl overflow-hidden">
-                  <img src={selectedSite.image || selectedSite.logo} alt={selectedSite.name} className="w-full h-full object-cover" />
+                  <img src={selectedSite.image || selectedSite.logo} alt={selectedSite.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 </div>
                 <div className="text-center">
                   <h4 className="text-2xl font-black text-zinc-900">{selectedSite.name.toUpperCase()}</h4>

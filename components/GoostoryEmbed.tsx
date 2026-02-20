@@ -496,6 +496,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
         </div>
         <button 
           onClick={() => setShowGridSettings(true)}
+          aria-label="ตั้งค่าการแสดงผล"
           className="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white transition-all border border-white/10 group shadow-lg"
           title="ตั้งค่าการแสดงผล"
         >
@@ -506,6 +507,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
         </button>
         <button 
           onClick={() => fileInputRef.current?.click()}
+          aria-label="เปลี่ยนพื้นหลัง"
           className="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white transition-all border border-white/10 group shadow-lg"
           title="เปลี่ยนพื้นหลัง"
         >
@@ -516,6 +518,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
         {customBg && (
           <button 
             onClick={clearBg}
+            aria-label="ล้างพื้นหลัง"
             className="p-3 bg-red-500/20 hover:bg-red-500/40 backdrop-blur-md rounded-full text-red-500 transition-all border border-red-500/20 shadow-lg"
             title="ล้างพื้นหลัง"
           >
@@ -604,6 +607,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
                 <div className="absolute top-5 left-5 right-5 flex justify-between items-center z-20 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-[-15px] group-hover:translate-y-0">
                   <button 
                     onClick={(e) => toggleFavorite(site.url, e)}
+                    aria-label="บันทึกรายการโปรด"
                     className={`p-2 rounded-full transition-all hover:scale-125 ${site.isFavorite ? 'bg-red-500 text-white shadow-xl shadow-red-500/40' : 'bg-black/60 text-zinc-400 border border-white/10'}`}
                   >
                     <svg className={`w-5 h-5 ${site.isFavorite ? 'fill-current animate-pulse' : 'fill-none'}`} stroke="currentColor" viewBox="0 0 24 24">
@@ -614,6 +618,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
                   {site.isUserAdded && (
                     <button 
                       onClick={(e) => deleteShortcut(site.id!, e)}
+                      aria-label="ลบโฮมเพจนี้"
                       className="p-2 bg-zinc-800 text-white rounded-full transition-all hover:bg-red-600 hover:scale-125 border border-white/10 shadow-lg"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -630,6 +635,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
                         setIsMiniBrowserModal(true);
                         setIsAudioSheetOpen(true);
                       }}
+                    aria-label="เปิดในมินิเบราเซอร์"
                     className="p-2 bg-black/60 text-zinc-300 rounded-full transition-all hover:bg-white/10 hover:scale-125 border border-white/5"
                     title="เปิดในมินิเบราเซอร์"
                   >
@@ -653,7 +659,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
                   className="relative bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-[2rem] flex items-center justify-center mb-6 shadow-2xl overflow-hidden group-hover:shadow-orange-600/50 group-hover:ring-4 group-hover:ring-orange-500 transition-all duration-700 group-hover:rotate-3"
                   style={{ width: `${iconSize}px`, height: `${iconSize}px` }}
                 >
-                  <img src={site.image || site.logo || `${BUNDLE_WIDGET_BASE}/logo/default.webp`} alt={site.name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-125 font-bold" onError={(e) => { const target = e.target as HTMLImageElement; const fallback = `${BUNDLE_WIDGET_BASE}/logo/default.webp`; if (target.dataset.errorHandled) return; target.dataset.errorHandled = "true"; target.onerror = null; target.src = fallback; }} />
+                  <img src={site.image || site.logo || `${BUNDLE_WIDGET_BASE}/logo/default.webp`} alt={site.name} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-125 font-bold" onError={(e) => { const target = e.target as HTMLImageElement; const fallback = `${BUNDLE_WIDGET_BASE}/logo/default.webp`; if (target.dataset.errorHandled) return; target.dataset.errorHandled = "true"; target.onerror = null; target.src = fallback; }} />
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-700 flex items-center justify-center backdrop-blur-[4px]">
                     <span className="text-white text-xs font-black tracking-[0.3em] translate-y-3 group-hover:translate-y-0 transition-transform">LET'S GO</span>
                   </div>

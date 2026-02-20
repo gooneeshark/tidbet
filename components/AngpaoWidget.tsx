@@ -51,6 +51,7 @@ const AngpaoWidget: React.FC = () => {
       >
         <button
           onClick={toggleModal}
+          aria-label="เปิดรับรางวัลอั่งเปา"
           className={`group relative w-16 h-16 rounded-2xl shadow-[0_10px_40px_rgba(220,38,38,0.5)] transition-all flex items-center justify-center border-2 border-yellow-400/30 overflow-hidden ${isBlocked ? 'bg-zinc-800 grayscale cursor-not-allowed' : 'bg-gradient-to-br from-red-500 to-red-700 hover:scale-110 active:scale-95'}`}
         >
           <span className="text-4xl filter drop-shadow-md group-hover:rotate-12 transition-transform duration-300">🧧</span>
@@ -79,7 +80,7 @@ const AngpaoWidget: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <button onClick={toggleModal} className="w-10 h-10 rounded-full bg-black/20 flex items-center justify-center hover:bg-red-500 transition-colors">✕</button>
+              <button onClick={toggleModal} aria-label="ปิดเมนู" className="w-10 h-10 rounded-full bg-black/20 flex items-center justify-center hover:bg-red-500 transition-colors">✕</button>
             </div>
 
             <div className="flex-1 bg-zinc-900 relative">

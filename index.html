@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <title>Goo Gemnee - สุดยอดผู้ช่วยสายปั่น</title>
+    <meta name="description" content="Goo Gemnee สุดยอดผู้ช่วยสายปั่น สนทนา ปรึกษา และสร้างสรรค์สิ่งใหม่ๆ ไปกับ AI อัจฉริยะ" />
     
     <!-- Social Media Meta Tags -->
     <meta property="og:title" content="Goo Gemnee - สุดยอดผู้ช่วยสายปั่น" />
@@ -25,6 +26,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <!-- สำหรับ Chrome/Android -->
     <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- LCP Preload -->
+    <link rel="preload" href="/Gemnee.png" as="image">
+
 
     <!-- Fonts & Scripts -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -208,9 +213,9 @@
                     a.target = "_blank";
                     a.className = 'ticker-item';
                     a.innerHTML = `
-                        <img src="${item.image}" class="item-image" loading="lazy" decoding="async">
+                        <img src="${item.image}" class="item-image" loading="lazy" decoding="async" alt="${item.name || 'Ticker Image'}">
                         <div class="logo-box">
-                            <img src="${item.logo}" class="w-full h-full object-contain" onerror="this.src='https://www.google.com/s2/favicons?sz=64&domain=google.com'">
+                            <img src="${item.logo}" class="w-full h-full object-contain" alt="${item.name || 'Logo'}" onerror="this.src='https://www.google.com/s2/favicons?sz=64&domain=google.com'">
                         </div>
                         <div class="item-content">
                             <span class="text-[10px] font-bold text-white truncate drop-shadow-md">${item.name || 'Untitled'}</span>

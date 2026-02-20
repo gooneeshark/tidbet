@@ -77,6 +77,8 @@ const ChatWidgetUI: React.FC<ChatWidgetUIProps> = memo(({
              <img 
               src="Gemnee.png" 
               alt="Mascot" 
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover"
               onError={(e) => {
                 const img = e.target as HTMLImageElement;
@@ -162,6 +164,7 @@ const ChatWidgetUI: React.FC<ChatWidgetUIProps> = memo(({
 
           <button 
             onClick={onClose}
+            aria-label="ปิดแชท"
             className="text-zinc-400 hover:text-white transition-colors p-2 hover:bg-zinc-800 rounded-full"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -229,6 +232,7 @@ const ChatWidgetUI: React.FC<ChatWidgetUIProps> = memo(({
           />
           <button 
             type="submit"
+            aria-label="ส่งข้อความ"
             disabled={!inputValue.trim() || state.isLoading || (remainingMessages === 0 && !hasKey)}
             className="absolute right-2 p-2 bg-orange-600 text-white rounded-xl hover:bg-orange-500 disabled:bg-zinc-800 disabled:text-zinc-600 disabled:cursor-not-allowed transition-all shadow-lg active:scale-90"
           >

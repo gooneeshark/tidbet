@@ -43,6 +43,8 @@ const Onboarding: React.FC<OnboardingProps> = ({ onSelectKey, onClose }) => {
           <img 
             src="/api1.png" 
             alt="API Key Setup"
+            loading="lazy"
+            decoding="async"
             className="w-full h-48 object-contain transition-transform group-hover:scale-105"
           />
         </div>

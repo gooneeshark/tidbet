@@ -359,6 +359,7 @@ const App: React.FC = () => {
               toggleWidget();
             }
           }}
+          aria-label="เปิดเมนูช่วยเหลือ"
           className={`w-20 h-20 pointer-events-auto rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.5)] flex items-center justify-center transform hover:scale-110 transition-transform duration-300 active:scale-90 group relative overflow-hidden bg-zinc-900 border-4 border-orange-600 ${isDragging ? 'cursor-grabbing scale-110' : 'cursor-grab'}`}
         >
           <img 
