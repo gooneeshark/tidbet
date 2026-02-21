@@ -7,6 +7,7 @@ import ChatWidgetUI from './components/ChatWidgetUI';
 import Onboarding from './components/Onboarding';
 import GoostoryEmbed from './components/GoostoryEmbed';
 import AngpaoWidget from './components/AngpaoWidget';
+import SmartPlayerWidget from './components/SmartPlayerWidget';
 import { generateGooSpeech, decode, decodeAudioData } from './services/geminiService';
 import { initNotifications } from './services/notificationService';
 
@@ -327,6 +328,7 @@ const App: React.FC = () => {
 
       <GoostoryEmbed sites={availableSites} />
       <AngpaoWidget />
+      <SmartPlayerWidget />
 
       <div 
         className="fixed z-[9999] flex flex-col items-end pointer-events-none"
