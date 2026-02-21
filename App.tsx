@@ -373,6 +373,7 @@ const App: React.FC = () => {
           <img 
             src="Gemnee.webp" 
             alt="Mascot" 
+            fetchPriority="high"
             className="w-full h-full object-cover p-1 transition-transform group-hover:rotate-12"
             onError={(e) => {
               const img = e.target as HTMLImageElement;
