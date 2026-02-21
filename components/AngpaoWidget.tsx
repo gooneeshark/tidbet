@@ -4,7 +4,7 @@ const AngpaoWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(Date.now());
   
-  const ANGPAO_URL = "https://gift.truemoney.com/campaign/voucher_detail?v=019c5b2a93cc7ca3aa40ce6c156e0ddbcar"; 
+  const ANGPAO_URL = "embed.html"; 
   const CLAIM_KEY = 'redPacket_claimed';
   const ACTIVE_DURATION = 20 * 1000; // 20 วินาที
   const COOLDOWN_DURATION = 10 * 60 * 1000; // 10 นาที

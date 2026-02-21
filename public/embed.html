@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Centered Page</title>
+    <style>
+        /* จัดโครงสร้างหลัก */
+        body {
+            margin: 0;
+            padding: 15px; /* กันเนื้อหาชิดขอบจอเกินไปในมือถือ */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Kanit', sans-serif; /* แนะนำฟอนต์ยอดนิยมสำหรับเว็บไทย */
+            text-align: center;
+         
+        }
+
+        .container {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 15px;
+  
+            width: 100%;
+            max-width: 600px; /* ความกว้างสูงสุดของเนื้อหา */
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .text-group {
+            margin: 20px 0;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #eee;
+            margin: 25px 0;
+        }
+
+        /* --- ส่วนของปุ่มที่ปรับปรุงใหม่ --- */
+        .btn-orange {
+            background-color: #ff8c00;
+            color: white;
+            border: none;
+            
+            /* ใช้ padding แค่พอดี แล้วคุมความกว้างด้วย width */
+            padding: 6px 8; 
+            width: 100%;       /* ให้ยาวเต็มพื้นที่ของ container */
+            max-width: 500px;  /* แต่ยาวไม่เกิน 500px ในหน้าจอใหญ่ */
+            
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px; /* ขอบมนแบบสมบูรณ์ */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(255, 140, 0, 0.3);
+        }
+
+        /* เอฟเฟกต์เมื่อเอาเมาส์วาง */
+        .btn-orange:hover {
+            background-color: #e67e00;
+            transform: translateY(-2px); /* ลอยขึ้นเล็กน้อย */
+            box-shadow: 0 6px 15px rgba(255, 140, 0, 0.4);
+        }
+
+        /* เอฟเฟกต์เมื่อกดปุ่ม */
+        .btn-orange:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <img src="https://i.postimg.cc/s2tNfVnH/screenshot-92.png/150x100" alt="Top Image">
+
+        <div class="text-group">
+            จำนวนเงินที่เพื่อนรับไปแล้ว &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ฿ 10,000.00/10,000.00<br>
+           เปิดรับซองแล้ว &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+500/500 คน<br>
+           รูปแบบการแบ่งเงิน &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+สุ่มจำนวน<br>
+          ข้อความถึงผู้รับ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Goonee'<br>
+           วันที่ซองหมดอายุ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+23 พ.ย. 2568 เวลา 3:44 น.
+        </div>
+        <hr>
+
+
+        <img src="https://i.postimg.cc/1z71Ph6C/screenshot-97.png" alt="Bottom Image">
+
+
+
+        <button class="btn-orange">ไปที่แอปทรูมันนี่</button>
+
+    </div>
+
+</body>
+</html>
