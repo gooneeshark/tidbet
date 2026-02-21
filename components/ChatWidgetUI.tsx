@@ -77,7 +77,7 @@ const ChatWidgetUI: React.FC<ChatWidgetUIProps> = memo(({
              <img 
               src="Gemnee.webp" 
               alt="Mascot" 
-              loading="lazy"
+              fetchPriority="high"
               decoding="async"
               className="w-full h-full object-cover"
               onError={(e) => {
