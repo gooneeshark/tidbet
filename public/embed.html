@@ -3,112 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Centered Page</title>
+    <title>TrueMoney Voucher Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        /* จัดโครงสร้างหลัก */
+        * {
+            box-sizing: border-box; /* สำคัญมาก: เพื่อให้ padding ไม่ดันความกว้างปุ่มจนล้นจอ */
+        }
+
         body {
-            margin: 40;
-            padding: 2px; /* กันเนื้อหาชิดขอบจอเกินไปในมือถือ */
+            margin: 0;
+            padding: 0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            font-family: 'Kanit', sans-serif; /* แนะนำฟอนต์ยอดนิยมสำหรับเว็บไทย */
-            text-align: center;
-         
-        }
-
-        .container {
-            background: white;
-            padding: 10px 5px;
-            border-radius: 15px;
-  
-
-	     min-width: 400px
-            max-width: 400px; /* ความกว้างสูงสุดของเนื้อหา */
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-            margin-bottom: 8px;
-        }
-
-        .text-group {
-            margin: 20px 0;
-            line-height: 1.8;
+            font-family: 'Kanit', sans-serif;
+            background-color: #ffffff;
             color: #333;
+            padding-bottom: 100px; /* พื้นที่ว่างด้านล่างกันปุ่มทับเนื้อหา */
+        }
+
+        .content-wrapper {
+            width: 100%;
+            max-width: 420px;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header-img {
+            width: 100px;
+            height: auto;
+            margin-bottom: 30px;
+        }
+
+        .illustration-img {
+            max-width: 200px;
+            height: auto;
+            margin: 30px 0;
+        }
+
+        /* --- ส่วนจัดวางข้อความ --- */
+        .text-group {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .text-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 14px;
+            gap: 10px;
+        }
+
+        .text-label {
+            color: #757575;
+            white-space: nowrap;
+        }
+
+        .text-value {
+            text-align: right;
+            color: #333;
+            font-weight: 400;
         }
 
         hr {
+            width: 100%;
             border: 0;
-            border-top: 1px solid #eee;
-            margin: 25px 0;
+            border-top: 1px solid #eeeeee;
+            margin: 20px 0;
         }
 
-        /* --- ส่วนของปุ่มที่ปรับปรุงใหม่ --- */
-        .btn-orange {
-            background-color: #ff8c00;
-            color: white;
-            border: none;
-            
-            /* ใช้ padding แค่พอดี แล้วคุมความกว้างด้วย width */
-            padding: 6px 8; 
-            width: 100%;       /* ให้ยาวเต็มพื้นที่ของ container */
-            max-width: 500px;  /* แต่ยาวไม่เกิน 500px ในหน้าจอใหญ่ */
-            
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 50px; /* ขอบมนแบบสมบูรณ์ */
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 20px;
-            box-shadow: 0 4px 10px rgba(255, 140, 0, 0.3);
+        .ref-text {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 10px;
         }
 
-        /* เอฟเฟกต์เมื่อเอาเมาส์วาง */
-        .btn-orange:hover {
-            background-color: #e67e00;
-            transform: translateY(-2px); /* ลอยขึ้นเล็กน้อย */
-            box-shadow: 0 6px 15px rgba(255, 140, 0, 0.4);
-        }
+/* --- ส่วนของ Footer: เป็นพื้นหลังขาวที่ลอยอยู่ล่างสุด --- */
+.footer-fixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    padding: 10px 0; /* เว้นระยะบน-ล่างของแถบขาวนิดหน่อย */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    border-top: 1px solid #f5f5f5;
+}
+.btn-orange {
+    width: 100%;
+    height: 20px;           
+    margin: 0 32px;        
+    padding: 0;            
+    
+    background-color: #FF8724;
+    color: white;
+    border: none;
+    border-radius: 100px;  
+    font-family: 'Kanit', sans-serif;
+    font-weight: 500;
+    
+    /* แก้จุดนี้ครับ */
+    font-size: clamp(13px, 3.8vw, 16px); 
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-sizing: border-box; 
+    white-space: nowrap; /* สำคัญ: ป้องกันไม่ให้ตัวหนังสือขึ้นบรรทัดใหม่ถ้าจอมันแคบมาก */
+    overflow: hidden;    /* กันพลาด */
+}    /* 3. จัดการเรื่อง Padding (ลบออกตามที่ต้องการ) */
+    padding: 0;            /* ลบ padding ที่เห็นเป็นแถบจางๆ ออก */
+    
+    /* 4. สไตล์อื่นๆ */
+    background-color: #FF8724;
+    color: white;
+    border: none;
+    border-radius: 100px;  /* ทรงมน */
+    font-family: 'Kanit', sans-serif;
+    font-size: 15px;       /* ปรับขนาดฟอนต์ให้รับกับความสูงที่ลดลง */
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-sizing: border-box; /* สำคัญ: เพื่อให้ margin ไม่ดันจนปุ่มล้นจอ */
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+}
 
-        /* เอฟเฟกต์เมื่อกดปุ่ม */
-        .btn-orange:active {
-            transform: translateY(0);
-        }
-    </style>
+.btn-orange:active {
+    background-color: #f07613;
+    transform: scale(0.98);
+}    </style>
 </head>
 <body>
 
-    <div class="container">
-        
-        <img src="https://i.postimg.cc/s2tNfVnH/screenshot-92.png/150x100" alt="Top Image">
+    <div class="content-wrapper">
+        <img src="https://i.postimg.cc/s2tNfVnH/screenshot-92.png" alt="Voucher Header" class="header-img">
 
         <div class="text-group">
-            จำนวนเงินที่เพื่อนรับไปแล้ว   ฿ 2,000.00/2,000.00<br>
-           เปิดรับซองแล้ว &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-20/20 คน<br>
-           รูปแบบการแบ่งเงิน &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-สุ่มจำนวน<br>
-          ข้อความถึงผู้รับ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Goonee'<br>
-           วันที่ซองหมดอายุ &nbsp;&nbsp;&nbsp;
-24 พ.ย. 2568 เวลา 13:34 น.
+            <div class="text-item">
+                <span class="text-label">จำนวนเงินที่เพื่อนรับไปแล้ว</span>
+                <span class="text-value">฿ 1,000.00/1,000.00</span>
+            </div>
+            <div class="text-item">
+                <span class="text-label">เปิดรับซองแล้ว</span>
+                <span class="text-value">10/10 คน</span>
+            </div>
+            <div class="text-item">
+                <span class="text-label">รูปแบบการแบ่งเงิน</span>
+                <span class="text-value">สุ่มจำนวน</span>
+            </div>
+            <div class="text-item">
+                <span class="text-label">ข้อความถึงผู้รับ</span>
+                <span class="text-value">-</span>
+            </div>
+            <div class="text-item">
+                <span class="text-label">วันที่ซองหมดอายุ</span>
+                <span class="text-value">24 พ.ย. 2568 เวลา 14:46 น.</span>
+            </div>
         </div>
+
         <hr>
 
+        <h3 style="width: 100%; text-align: left; font-size: 16px; margin: 0 0 10px 0; font-weight: 500;">รายชื่อเพื่อนที่รับซองไปแล้ว</h3>
 
-        <img src="https://i.postimg.cc/Ls7D6VVN/screenshot-97.webp" alt="Bottom Image">
+        <img src="https://i.postimg.cc/5tbDDrW1/screenshot-97.webp" alt="Illustration" class="illustration-img">
 
-
-
-        <button class="btn-orange">ไปที่แอปทรูมันนี่</button>
-
+        <p class="ref-text">เลขอ้างอิงซอง: 89473604530403192</p>
     </div>
+
+    <footer class="footer-fixed">
+        <button class="btn-orange" onclick="window.location.href='#'">
+            ไปที่แอปทรูมันนี่
+        </button>
+    </footer>
 
 </body>
 </html>
