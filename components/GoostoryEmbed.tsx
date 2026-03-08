@@ -689,7 +689,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
         <div
           className={`fixed transition-all duration-500 ease-in-out flex flex-col items-center ${isMiniBrowserModal
             ? 'inset-0 z-[9999] justify-center p-4 bg-black/80 backdrop-blur-xl'
-            : 'left-0 w-full z-[90] pointer-events-none'
+            : 'left-0 w-full z-[990] pointer-events-none'
             }`}
           style={isMiniBrowserModal ? {
             paddingTop: '16px',
@@ -749,7 +749,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
                     onTouchStart={handleResizeStart}
                     className="absolute top-0 left-0 w-12 h-12 cursor-nw-resize z-[100] group/resize flex items-start justify-start p-2"
                   >
-                    <div className="w-6 h-6 border-t-4 border-l-4 border-white/20 group-hover/resize:border-orange-500 group-active/resize:border-orange-500 transition-colors rounded-tl-md"></div>
+                    <div className="w-1 h-1 border-t-4 border-l-4 border-white/20 group-hover/resize:border-orange-500 group-active/resize:border-orange-500 transition-colors rounded-tl-md"></div>
                   </div>
 
                   {/* Right Corner */}
@@ -758,7 +758,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
                     onTouchStart={handleResizeStart}
                     className="absolute top-0 right-0 w-12 h-12 cursor-ne-resize z-[100] group/resize flex items-start justify-end p-2"
                   >
-                    <div className="w-6 h-6 border-t-4 border-r-4 border-white/20 group-hover/resize:border-orange-500 group-active/resize:border-orange-500 transition-colors rounded-tr-md"></div>
+                    <div className="w-1 h-1 border-t-4 border-r-4 border-white/20 group-hover/resize:border-orange-500 group-active/resize:border-orange-500 transition-colors rounded-tr-md"></div>
                   </div>
 
                   {/* Top Edge Handle (Thicker for touch) */}
