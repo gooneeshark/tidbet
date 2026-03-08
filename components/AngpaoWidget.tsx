@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 const AngpaoWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(Date.now());
-  
-  const ANGPAO_URL = "embed.html"; 
+
+  const ANGPAO_URL = "embed.html";
   const CLAIM_KEY = 'redPacket_claimed';
   const ACTIVE_DURATION = 20 * 1000; // 20 วินาที
   const COOLDOWN_DURATION = 10 * 60 * 1000; // 10 นาที
@@ -23,7 +23,7 @@ const AngpaoWidget: React.FC = () => {
 
   const startTime = getStartTime();
   const elapsed = startTime ? currentTime - startTime : null;
-  
+
   // ตรวจสอบสถานะปัจจุบัน
   const isStarted = startTime !== null;
   const isActive = isStarted && elapsed !== null && elapsed < ACTIVE_DURATION;
@@ -45,7 +45,7 @@ const AngpaoWidget: React.FC = () => {
   return (
     <>
       {/* Floating Button */}
-      <div 
+      <div
         className="fixed z-[60] flex flex-col items-center pointer-events-auto"
         style={{ bottom: '100px', right: '24px' }}
       >
@@ -56,7 +56,7 @@ const AngpaoWidget: React.FC = () => {
         >
           <span className="text-4xl filter drop-shadow-md group-hover:rotate-12 transition-transform duration-300">🧧</span>
           {!isBlocked && !isActive && (
-             <div className="absolute top-1 right-1 w-3 h-3 bg-yellow-400 rounded-full animate-ping"></div>
+            <div className="absolute top-1 right-1 w-3 h-3 bg-yellow-400 rounded-full animate-ping"></div>
           )}
         </button>
         <span className="mt-2 text-[10px] font-black text-red-500 bg-white/90 px-2 py-0.5 rounded-full uppercase shadow-sm border border-red-200">
@@ -66,9 +66,9 @@ const AngpaoWidget: React.FC = () => {
 
       {/* Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl">
-          <div className="bg-zinc-950 w-full max-w-4xl h-[85vh] rounded-[2.5rem] overflow-hidden border border-red-500/30 flex flex-col shadow-[0_0_80px_rgba(220,38,38,0.2)]">
-            
+        <div className="fixed inset-x-0 bottom-0 z-[10000] flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl" style={{ top: 'var(--goo-topbar-safe-top, 0px)' }}>
+          <div className="bg-zinc-950 w-full max-w-4xl h-full max-h-[85vh] rounded-[2.5rem] overflow-hidden border border-red-500/30 flex flex-col shadow-[0_0_80px_rgba(220,38,38,0.2)]">
+
             {/* Header */}
             <div className="p-5 bg-gradient-to-r from-red-600 to-red-800 flex justify-between items-center text-white">
               <div className="flex items-center gap-4">
@@ -90,10 +90,10 @@ const AngpaoWidget: React.FC = () => {
                   <div className="text-7xl mb-6">🎁</div>
                   <h2 className="text-3xl font-black text-white mb-4">พร้อมรับรางวัลหรือยัง?</h2>
                   <p className="text-zinc-400 font-bold mb-8 max-w-md">
-                    มึงมีเวลากรอกเบอร์ <span className="text-yellow-400 text-xl">20 วินาที</span> หลังจากกดปุ่ม "ยืนยัน" <br/>
+                    มึงมีเวลากรอกเบอร์ <span className="text-yellow-400 text-xl">20 วินาที</span> หลังจากกดปุ่ม "ยืนยัน" <br />
                     ถ้ากดไม่ทัน หรือกดย้อนกลับ ถือว่าสละสิทธิ์รอบนี้ทันที!
                   </p>
-                  <button 
+                  <button
                     onClick={handleConfirm}
                     className="px-12 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-black rounded-full text-xl hover:scale-110 active:scale-95 transition-all shadow-[0_0_30px_rgba(234,179,8,0.3)]"
                   >
@@ -103,15 +103,15 @@ const AngpaoWidget: React.FC = () => {
               ) : isActive ? (
                 /* 2. หน้า Iframe เมื่อเวลากำลังเดิน */
                 <div className="w-full h-full">
-                  <iframe 
+                  <iframe
                     src={ANGPAO_URL}
                     className="w-full h-full border-none"
                     title="Angpao Giveaway"
                   />
                   {/* แถบเตือนเวลาด้านบน Iframe */}
                   <div className="absolute top-0 left-0 right-0 h-1 bg-zinc-800">
-                    <div 
-                      className="h-full bg-yellow-400 transition-all duration-1000" 
+                    <div
+                      className="h-full bg-yellow-400 transition-all duration-1000"
                       style={{ width: `${(1 - elapsed! / ACTIVE_DURATION) * 100}%` }}
                     />
                   </div>

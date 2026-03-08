@@ -1,268 +1,570 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ฐานข้อมูลเว็บโกง - ระวังภัย</title>
-    <meta name="description" content="ฐานข้อมูลตรวจสอบรายชื่อเว็บพนันโกง บิน ถอนไม่ได้ อัพเดทล่าสุด แนะนำวิธีปฏิบัติเมื่อโดนโกง" />
-    <style>
-        :root {
-            --primary: #ef4444;
-            --bg: #18181b;
-            --surface: #27272a;
-            --text: #ffffff;
-            --border: #3f3f46;
-        }
+<html lang="en" ng-strict-di="">
+    <head>
+        <style>
+            @charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate) {
+                display: none !important;
+            }
 
-        body {
-            margin: 0;
-            padding: 1.5rem;
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            box-sizing: border-box;
-        }
+            ng\:form {
+                display: block;
+            }
 
-        * {
-            box-sizing: border-box;
-        }
+            .ng-animate-shim {
+                visibility: hidden;
+            }
 
-        h1 {
-            margin: 0;
-            color: var(--primary);
-            font-size: 1.75rem;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .header-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .search-box {
-            position: relative;
-            flex-grow: 1;
-            max-width: 500px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 0.75rem 1rem 0.75rem 2.5rem;
-            border-radius: 9999px;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid var(--border);
-            color: white;
-            font-size: 1rem;
-            transition: all 0.2s;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            opacity: 0.5;
-        }
-
-        .report-btn {
-            background: linear-gradient(135deg, var(--primary), #b91c1c);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 9999px;
-            text-decoration: none;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-            white-space: nowrap;
-        }
-
-        .report-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
-        }
-
-        .warning-card {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--primary);
-            padding: 1.25rem;
-            border-radius: 1rem;
-            line-height: 1.5;
-        }
-
-        .warning-card h3 {
-            margin: 0 0 0.5rem 0;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .warning-card ul {
-            margin: 0;
-            padding-left: 1.25rem;
-            color: #fca5a5;
-        }
-
-        .scam-list {
-            display: grid;
-            gap: 1rem;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        }
-
-        .scam-item {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 1rem;
-            border-radius: 0.75rem;
-            transition: all 0.2s;
-        }
-
-        .scam-item:hover {
-            border-color: var(--primary);
-            background: rgba(255,255,255,0.05);
-        }
-
-        .scam-name {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #ffbba6;
-            margin-bottom: 0.25rem;
-        }
-
-        .scam-reason {
-            font-size: 0.875rem;
-            color: #a1a1aa;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #a1a1aa;
-            display: none;
-        }
-    </style>
+            .ng-anchor {
+                position: absolute;
+            }
+        </style>
+        <meta charset="utf-8">
+        <base href="/">
+        <title>Goonee' | bnd.link</title>
+        <meta name="prerender-status-code" content="200">
+        <meta name="robots" content="all">
+        <meta name="build" content="fbcbe8ad34aa856c4ab0f2e467a950dd56a90eaa">
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+        <meta name="referrer" content="origin-when-cross-origin">
+        <meta name="version" content="10.1.444">
+        <meta name="description" content="Press Kit of Goonee'">
+        <meta name="color-scheme" content="light dark">
+        <meta property="og:site_name" content="BandLab">
+        <meta property="og:url" content="https://bnd.link/gooneebugseeder/epk/bio">
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="Goonee' | bnd.link">
+        <meta property="og:description" content="Press Kit of Goonee'">
+        <meta property="og:image" content="https://bl-prod-images.azureedge.net/v1.3/users/1a8cdac8-10c0-475e-bcdd-a28a66995bb4/300x300">
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:site" content="@BandLab">
+        <meta name="twitter:title" content="Goonee' | bnd.link">
+        <meta name="twitter:description" content="Press Kit of Goonee'">
+        <meta name="twitter:image" content="https://bl-prod-images.azureedge.net/v1.3/users/1a8cdac8-10c0-475e-bcdd-a28a66995bb4/300x300">
+        <link rel="canonical" href="https://bnd.link/gooneebugseeder/epk/bio">
+        <link rel="dns-prefetch" href="https://bandlabimages.azureedge.net">
+        <link rel="icon" type="image/png" href="https://www.bandlab.com/web-pages/images/favicons/favicon-48x48-53ec365b4b.png" sizes="48x48">
+        <link rel="manifest" href="https://www.bandlab.com/web-pages/manifest-581233484e.json">
+        <meta name="theme-color" content="#282c32">
+        <link rel="stylesheet" href="https://www.bandlab.com/web-fonts/v5.0.1/bandlab-sans.css">
+        <link rel="stylesheet" href="https://www.bandlab.com/web-pages/styles/main-0dbe6eb85f.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap">
+        <script type="text/javascript" async="" src="https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=C5HQQ8FGE0M3SF4JC1K0&amp;lib=ttq"></script>
+        <script src="https://www.redditstatic.com/ads/pixel.js" async=""></script>
+        <script>
+            window.fromAPI = {
+                userAgent: {
+                    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0",
+                    "browser": {
+                        "name": "Edge",
+                        "version": "145.0.0.0",
+                        "major": "145"
+                    },
+                    "engine": {
+                        "name": "Blink",
+                        "version": "145.0.0.0"
+                    },
+                    "os": {
+                        "name": "Windows",
+                        "version": "10"
+                    },
+                    "device": {},
+                    "cpu": {
+                        "architecture": "amd64"
+                    }
+                }
+            }
+        </script>
+</script><script type="text/javascript" async="" src="https://googleads.g.doubleclick.net/pagead/viewthroughconversion/876226372/?random=1772152852982&amp;cv=11&amp;fst=1772152852982&amp;bg=ffffff&amp;guid=ON&amp;async=1&amp;en=gtag.config&amp;gtm=45be62p1v9164757486za200zb9128798547zd9128798547xec&amp;gcd=13r3r3r3r5l1&amp;dma=0&amp;tag_exp=103116026~103200004~104527906~104528501~104684208~104684211~115938465~115938468~117484252~117512542~117611007&amp;u_w=1366&amp;u_h=768&amp;url=https%3A%2F%2Fbnd.link%2Fgooneebugseeder%2Fepk%2Fbio&amp;frm=0&amp;tiba=bnd.link&amp;hn=www.googleadservices.com&amp;npa=0&amp;pscdl=noapi&amp;auid=2043507658.1772139865&amp;uaa=x86&amp;uab=64&amp;uafvl=Not%253AA-Brand%3B99.0.0.0%7CMicrosoft%2520Edge%3B145.0.3800.70%7CChromium%3B145.0.7632.110&amp;uamb=0&amp;uam=&amp;uap=Windows&amp;uapv=19.0.0&amp;uaw=0&amp;data=event%3Dgtag.config&amp;rfmt=3&amp;fmt=4"></script>
 </head>
 <body>
+    <main id="vue" data-v-app="">
+        <section id="bandlab-epk-page" data-theme="light" class="bandlab-epk-pages bandlab-epk-pages-theme-showcase">
+            <div class="bandlab-epk-pages-showcase-background"></div>
+            <div class="bandlab-epk-pages-content">
+                <div class="bandlab-epk-pages-top-bar">
+                    <a href="https://www.bandlab.com/gooneebugseeder" class="bandlab-epk-pages-top-bar-left undecorated-anchor" target="_blank">
+                        <img src="https://bl-prod-images.azureedge.net/v1.3/users/1a8cdac8-10c0-475e-bcdd-a28a66995bb4/80x80" alt="" class="ds-avatar-size-40 ds-avatar bandlab-epk-pages-top-bar-profile-picture">
+                        <span class="bandlab-epk-pages-top-bar-username">@gooneebugseeder</span>
+                    </a>
+                </div>
+                <section class="bandlab-epk-pages-showcase-hero-section bandlab-epk-pages-content-section">
+                    <div class="bandlab-epk-pages-block-edit-container">
+                        <div class="bandlab-epk-pages-showcase-hero-wrapper">
+                            <h1 class="bandlab-epk-pages-showcase-hero-name" style="transform: scale(1);">Goonee'</h1>
+                        </div>
+                        <!---->
+                    </div>
+                </section>
+                <div class="bandlab-epk-pages-showcase-profile-video-sections">
+                    <section class="bandlab-epk-pages-showcase-profile-section">
+                        <div class="bandlab-epk-pages-block-edit-container">
+                            <div class="bandlab-epk-pages-showcase-profile-section-content">
+                                <p class="bandlab-epk-pages-showcase-profile-section-content-location typography-body-default-regular bandlab-epk-pages-showcase-profile-section-content-secondary">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path fill="currentColor" fill-rule="evenodd" d="M12 6a3 3 0 1 0 0 6 3 3 0 0 0 0-6m-1 3a1 1 0 1 1 2 0 1 1 0 0 1-2 0" clip-rule="evenodd"></path>
+                                        <path fill="currentColor" fill-rule="evenodd" d="M11.22 21.63 12 21zl.78.95.78-.95L12 21l.78.63.02-.03.06-.07 1.03-1.32c.66-.88 1.55-2.08 2.44-3.41a38 38 0 0 0 2.47-4.17c.67-1.34 1.2-2.75 1.2-3.92C20 4.4 16.38 1 12 1S4 4.41 4 8.7c0 1.18.53 2.6 1.2 3.93a38 38 0 0 0 2.47 4.17 72 72 0 0 0 3.47 4.73l.06.07zM6 8.71C6 5.59 8.65 3 12 3s6 2.6 6 5.7a8 8 0 0 1-.99 3.05 36 36 0 0 1-2.34 3.94 70 70 0 0 1-2.67 3.7 73 73 0 0 1-2.67-3.7A36 36 0 0 1 7 11.75 8 8 0 0 1 6 8.7" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="bandlab-epk-pages-showcase-profile-section-content-location-text text-truncate">Thailand</span>
+                                </p>
+                                <div class="bandlab-epk-pages-showcase-profile-section-content-skills ds-meta-container ds-meta-container-layout-wrap typography-body-default-regular bandlab-epk-pages-showcase-profile-section-content-secondary">
+                                    <iframe width="560" height="353" src="https://www.bandlab.com/embed/collection/?id=c49592dc-9713-f111-9a49-000d3a975135" allowfullscreen></iframe>
+                                    <div class="bandlab-epk-pages-showcase-profile-section-content-skill ds-meta-item">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="ds-meta-item-icon">
+                                            <path fill="currentColor" d="M13.05 2.1a1 1 0 1 1-2-.1 1 1 0 0 1 2 .1m2.18.32a4.76 4.76 0 0 1 6.71.3 4.73 4.73 0 0 1-.3 6.7c-.56.51-1.28.74-1.92.84-.65.1-1.33.08-1.92.02q-.07 0-.1.02l-.02.01-2.4 8.42a2 2 0 0 1-1.3 1.35L8.6 21.85l-.97 1.3-1.6-1.19.97-1.3a2 2 0 0 1 .98-.7l5.36-1.78 2.41-8.42A2.1 2.1 0 0 1 18 8.29c.48.05.98.06 1.4 0q.66-.12.88-.34a2.73 2.73 0 0 0 .18-3.87 2.76 2.76 0 0 0-3.87-.2L4.15 16.75l.42 1.14a2 2 0 0 1-.33 1.95l-1.46 1.8-1.56-1.27 1.47-1.8-.42-1.14a2 2 0 0 1 .44-2.07l12.5-12.92zM2 13.05a1 1 0 1 0 .1-2 1 1 0 0 0-.1 2m3.05-2.95a1 1 0 1 1-2-.1 1 1 0 0 1 2 .1M6 9.05a1 1 0 1 0 .1-2 1 1 0 0 0-.1 2M9.05 6.1a1 1 0 1 1-2-.1 1 1 0 0 1 2 .1M10 5.05a1 1 0 1 0 .1-2 1 1 0 0 0-.1 2"></path>
+                                        </svg>
+                                        Guitarist
+                                    </div>
+                                </div><blockquote class="tiktok-embed" cite="https://www.tiktok.com/@goo..nee/video/7611645337186422024" data-video-id="7611645337186422024" data-embed-from="embed_page" style="max-width:605px; min-width:325px;"> <section> <a target="_blank" title="@goo..nee" href="https://www.tiktok.com/@goo..nee?refer=embed">@goo..nee</a> <p>original</p> <a target="_blank" title="♬ เสียงต้นฉบับ - gooneebugseeder - Goonee'" href="https://www.tiktok.com/music/เสียงต้นฉบับ-gooneebugseeder-7611645379687910162?refer=embed">♬ เสียงต้นฉบับ - gooneebugseeder - Goonee'</a> </section> </blockquote> <script async src="https://www.tiktok.com/embed.js"></script>
+                                <p class="typography-body-default-regular">Welcome to Goo Univers Explore the world of Goo-Nee: A hub for AI-driven music, software development, 3D design, and hacker-aesthetic browser tools. กูนี่รวมทั้งชีวิตมาถ่ายทอดเป็นผลงานทุกรูแบบแล้ว อยากให้ทำอะไรเพิ่มขอมาสิ https://goo-nee.netlify.app/</p>
+                            </div>
+                            <!---->
+                        </div>
+                        <button class="bandlab-epk-pages-showcase-profile-section-cta typography-body-default-medium unset-button">Get in touch </button>
+                    </section>
+                    <section class="bandlab-epk-pages-showcase-video-section">
+                        <div class="bandlab-epk-pages-block-edit-container">
+                            <div class="bandlab-epk-pages-showcase-video-section-videos">
+                                <iframe class="bandlab-epk-pages-showcase-video" src="https://www.youtube.com/embed/NbfUI_VmuPs" title="" allowfullscreen=""></iframe>
+                                <iframe class="bandlab-epk-pages-showcase-video" src="https://www.youtube.com/embed/7fctIXtQnpk" title="" allowfullscreen=""></iframe>
+                            </div>
+                            <!---->
+                        </div>
+                    </section>
+                </div>
+                <section class="bandlab-epk-pages-showcase-tracks-section bandlab-epk-pages-content-section">
+                    <div class="bandlab-epk-pages-block-edit-container">
+                        <div class="bandlab-epk-pages-showcase-tracks-wrapper">
+                            <h2 class="bandlab-epk-pages-showcase-section-title" style="min-width: 416px;">Track highlights </h2>
+                            <div class="bandlab-epk-pages-showcase-tracks-section-list">
+                                <div data-theme="dark">
+                                    <track-highlight-tile class="epk-pages-showcase-highlighted-track ng-scope ng-isolate-scope" current-time="currentTime" revision="revision" post="post" style="--ds-dominant-color-light: hsl(280.79999999999995, 21.36752136752137%, 22.941176470588236%); --ds-dominant-color-dark: hsl(280.79999999999995, 21.36752136752137%, 22.941176470588236%);">
+                                        <div class="track-highlight-tile-player">
+                                            <div class="track-highlight-tile-project-cover status-stopped">
+                                                <img ng-srcset="https://bl-prod-images.azureedge.net/v1.3/songs/0d6f58b1-3461-461f-b2db-fb6115709ffd/200x200 1x, https://bl-prod-images.azureedge.net/v1.3/songs/0d6f58b1-3461-461f-b2db-fb6115709ffd/400x400 2x" width="108" height="108" srcset="https://bl-prod-images.azureedge.net/v1.3/songs/0d6f58b1-3461-461f-b2db-fb6115709ffd/200x200 1x,https://bl-prod-images.azureedge.net/v1.3/songs/0d6f58b1-3461-461f-b2db-fb6115709ffd/400x400 2x">
+                                                <div player-audio="vm.revision" post="vm.post" class="player-audio-controls player-button-center" engagement-observer-play="true">
+                                                    <player-audio-button class="player-button-40" data-v-app="">
+                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" role="img" class="icon-player-play" aria-label="Play">
+                                                            <path fill="currentColor" d="M7.57 2.18A1 1 0 0 0 6 3v18a1 1 0 0 0 1.57.82l13-9a1 1 0 0 0 0-1.64z"></path>
+                                                        </svg>
+                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" role="img" class="icon-player-pause" aria-label="Pause">
+                                                            <path fill="currentColor" d="M5 4a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1zm9 0a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1z"></path>
+                                                        </svg>
+                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" role="img" class="icon-player-loading" aria-label="Loading…">
+                                                            <path fill="currentColor" fill-rule="evenodd" d="M21 12a9 9 0 0 0-9-9V1A11 11 0 1 1 1 12h2a9 9 0 1 0 18 0" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" role="img" class="icon-player-restart" aria-label="Restart">
+                                                            <path fill="currentColor" d="M12 4a8 8 0 1 1-7.42 11H2.46A10 10 0 1 0 3 7.64V4H1v7h7V9H4.58A8 8 0 0 1 12 4"></path>
+                                                        </svg>
+                                                    </player-audio-button>
+                                                </div>
+                                            </div>
+                                            <header class="track-highlight-tile-player-header" ng-class="::{ forked: vm.revision.song.isFork }">
+                                                <div class="track-highlight-tile-player-titles">
+                                                    <div class="track-highlight-tile-player-main-title">
+                                                        <!-- ngIf: !vm.post.track -->
+                                                        <a ng-if="!vm.post.track" class="track-highlight-tile-title text-truncate ng-binding ng-scope" ui-sref="track({ id: vm.post.id, revId: vm.revision.id })" href="/redirectTo/track/d5ac1583-d4fe-4508-bfd2-1368ef69ccfb?revId=95c2bdab-8d16-4074-992c-d0ea9578d46b">Goonee'ฮักเจ้าเด้อ </a>
+                                                        <!-- end ngIf: !vm.post.track -->
+                                                        <!-- ngIf: vm.post.track -->
+                                                        <!-- ngIf: vm.revision.post.isExplicit -->
+                                                    </div>
+                                                    <div class="track-highlight-tile-subtitle ds-meta-container ds-meta-container-layout-truncate-last" style="--ds-meta-glyphs-color: auto">
+                                                        <project-author revision="vm.revision" song="vm.revision.song" class="ds-meta-item ng-isolate-scope">
+                                                            <!-- ngIf: vm.song.author.type === 'Band' -->
+                                                            <!-- ngIf: (vm.song.author.type === 'User') -->
+                                                            <span ng-if="(vm.song.author.type === 'User')" class="ng-scope">
+                                                                <a ui-sref="user.feed({ username: vm.revision.creator.username || vm.song.author.username, triggeredFrom: vm.triggeredFrom })" ng-attr-target="{{ vm.hasWebviewCookie() ? '_blank' : '' }}" class="ng-binding" href="/redirectTo/gooneebugseeder" target="">Goonee'</a>
+                                                            </span>
+                                                            <!-- end ngIf: (vm.song.author.type === 'User') -->
+                                                            <!-- ngIf: (vm.song.counters.collaborators > 0 && vm.song.author.type === 'User') -->
+                                                        </project-author>
+                                                        <span class="ds-meta-item ng-binding">2026 </span>
+                                                    </div>
+                                                    <div class="track-highlight-tile-duration">
+                                                        <!-- ngIf: vm.currentTime -->
+                                                        <span class="ng-binding">3:19 </span>
+                                                    </div>
+                                                    <revision-player-audio class="hide-for-medium-down revision-player-area-waveform ng-isolate-scope" bar-width="4" current-time="vm.currentTime" post="vm.post" revision="vm.revision">
+                                                        <div class="revision-player-audio-waveform" player-audio="vm.revision" post="vm.post" ng-class="{ processing: vm.revision.mixdown.status !== 'Ready', silent: !vm.revision.mixdown.duration }">
+                                                            <!-- ngIf: vm.revision.mixdown.duration -->
+                                                            <time-markers ng-if="vm.revision.mixdown.duration" post="vm.post" revision="vm.revision" class="ng-scope"></time-markers>
+                                                            <!-- end ngIf: vm.revision.mixdown.duration -->
+                                                            <span player-audio-button-toggle="" class="visually-hidden"></span>
+                                                        </div>
+                                                        <!-- ngIf: vm.revision.mixdown.status !== 'Ready' -->
+                                                    </revision-player-audio>
+                                                </div>
+                                            </header>
+                                        </div>
+                                    </track-highlight-tile>
+                                </div>
+                                <div data-theme="dark">
+                                    <track-highlight-tile class="epk-pages-showcase-highlighted-track ng-scope ng-isolate-scope" current-time="currentTime" revision="revision" post="post" style="--ds-dominant-color-light: hsl(201.08108108108107, 27.007299270073%, 26.862745098039216%); --ds-dominant-color-dark: hsl(201.08108108108107, 27.007299270073%, 26.862745098039216%);">
+                                        <div class="track-highlight-tile-player">
+                                            <div class="track-highlight-tile-project-cover status-stopped">
+                                                <img ng-srcset="https://bl-prod-images.azureedge.net/v1.3/songs/c2b33424-3a77-41b3-bd28-741b3f81730c/200x200 1x, https://bl-prod-images.azureedge.net/v1.3/songs/c2b33424-3a77-41b3-bd28-741b3f81730c/400x400 2x" width="108" height="108" srcset="https://bl-prod-images.azureedge.net/v1.3/songs/c2b33424-3a77-41b3-bd28-741b3f81730c/200x200 1x,https://bl-prod-images.azureedge.net/v1.3/songs/c2b33424-3a77-41b3-bd28-741b3f81730c/400x400 2x">
+                                                <div player-audio="vm.revision" post="vm.post" class="player-audio-controls player-button-center" engagement-observer-play="true">
+                                                    <player-audio-button class="player-button-40" data-v-app="">
+                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" role="img" class="icon-player-play" aria-label="Play">
+                                                            <path fill="currentColor" d="M7.57 2.18A1 1 0 0 0 6 3v18a1 1 0 0 0 1.57.82l13-9a1 1 0 0 0 0-1.64z"></path>
+                                                        </svg>
+                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" role="img" class="icon-player-pause" aria-label="Pause">
+                                                            <path fill="currentColor" d="M5 4a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1zm9 0a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1z"></path>
+                                                        </svg>
+                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" role="img" class="icon-player-loading" aria-label="Loading…">
+                                                            <path fill="currentColor" fill-rule="evenodd" d="M21 12a9 9 0 0 0-9-9V1A11 11 0 1 1 1 12h2a9 9 0 1 0 18 0" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" role="img" class="icon-player-restart" aria-label="Restart">
+                                                            <path fill="currentColor" d="M12 4a8 8 0 1 1-7.42 11H2.46A10 10 0 1 0 3 7.64V4H1v7h7V9H4.58A8 8 0 0 1 12 4"></path>
+                                                        </svg>
+                                                    </player-audio-button>
+                                                </div>
+                                            </div>
+                                            <header class="track-highlight-tile-player-header" ng-class="::{ forked: vm.revision.song.isFork }">
+                                                <div class="track-highlight-tile-player-titles">
+                                                    <div class="track-highlight-tile-player-main-title">
+                                                        <!-- ngIf: !vm.post.track -->
+                                                        <a ng-if="!vm.post.track" class="track-highlight-tile-title text-truncate ng-binding ng-scope" ui-sref="track({ id: vm.post.id, revId: vm.revision.id })" href="/redirectTo/track/4248a5f0-13c0-4cc5-ab67-a1b86ab70071?revId=bf41c74f-22e9-413f-96d5-3493e84af591">ถ้าการหายไปของกูนี้ </a>
+                                                        <!-- end ngIf: !vm.post.track -->
+                                                        <!-- ngIf: vm.post.track -->
+                                                        <!-- ngIf: vm.revision.post.isExplicit -->
+                                                    </div>
+                                                    <div class="track-highlight-tile-subtitle ds-meta-container ds-meta-container-layout-truncate-last" style="--ds-meta-glyphs-color: auto">
+                                                        <project-author revision="vm.revision" song="vm.revision.song" class="ds-meta-item ng-isolate-scope">
+                                                            <!-- ngIf: vm.song.author.type === 'Band' -->
+                                                            <!-- ngIf: (vm.song.author.type === 'User') -->
+                                                            <span ng-if="(vm.song.author.type === 'User')" class="ng-scope">
+                                                                <a ui-sref="user.feed({ username: vm.revision.creator.username || vm.song.author.username, triggeredFrom: vm.triggeredFrom })" ng-attr-target="{{ vm.hasWebviewCookie() ? '_blank' : '' }}" class="ng-binding" href="/redirectTo/gooneebugseeder" target="">Goonee'</a>
+                                                            </span>
+                                                            <!-- end ngIf: (vm.song.author.type === 'User') -->
+                                                            <!-- ngIf: (vm.song.counters.collaborators > 0 && vm.song.author.type === 'User') -->
+                                                        </project-author>
+                                                        <span class="ds-meta-item ng-binding">2026 </span>
+                                                    </div>
+                                                    <div class="track-highlight-tile-duration">
+                                                        <!-- ngIf: vm.currentTime -->
+                                                        <span class="ng-binding">4:48 </span>
+                                                    </div>
+                                                    <revision-player-audio class="hide-for-medium-down revision-player-area-waveform ng-isolate-scope" bar-width="4" current-time="vm.currentTime" post="vm.post" revision="vm.revision">
+                                                        <div class="revision-player-audio-waveform" player-audio="vm.revision" post="vm.post" ng-class="{ processing: vm.revision.mixdown.status !== 'Ready', silent: !vm.revision.mixdown.duration }">
+                                                            <!-- ngIf: vm.revision.mixdown.duration -->
+                                                            <time-markers ng-if="vm.revision.mixdown.duration" post="vm.post" revision="vm.revision" class="ng-scope"></time-markers>
+                                                            <!-- end ngIf: vm.revision.mixdown.duration -->
+                                                            <span player-audio-button-toggle="" class="visually-hidden"></span>
+                                                        </div>
+                                                        <!-- ngIf: vm.revision.mixdown.status !== 'Ready' -->
+                                                    </revision-player-audio>
+                                                </div>
+                                            </header>
+                                        </div>
+                                    </track-highlight-tile>
+                                </div>
+                                <div data-theme="dark">
+                                    <track-highlight-tile class="epk-pages-showcase-highlighted-track ng-scope ng-isolate-scope" current-time="currentTime" revision="revision" post="post" style="--ds-dominant-color-light: hsl(233.6842105263158, 20.879120879120883%, 35.68627450980392%); --ds-dominant-color-dark: hsl(233.6842105263158, 20.879120879120883%, 35.68627450980392%);">
+                                        <div class="track-highlight-tile-player">
+                                            <div class="track-highlight-tile-project-cover status-stopped">
+                                                <img ng-srcset="https://bl-prod-images.azureedge.net/v1.3/songs/8ff31124-d97a-4173-8422-dab8ac7df897/200x200 1x, https://bl-prod-images.azureedge.net/v1.3/songs/8ff31124-d97a-4173-8422-dab8ac7df897/400x400 2x" width="108" height="108" srcset="https://bl-prod-images.azureedge.net/v1.3/songs/8ff31124-d97a-4173-8422-dab8ac7df897/200x200 1x,https://bl-prod-images.azureedge.net/v1.3/songs/8ff31124-d97a-4173-8422-dab8ac7df897/400x400 2x">
+                                                <div player-audio="vm.revision" post="vm.post" class="player-audio-controls player-button-center" engagement-observer-play="true">
+                                                    <player-audio-button class="player-button-40" data-v-app="">
+                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" role="img" class="icon-player-play" aria-label="Play">
+                                                            <path fill="currentColor" d="M7.57 2.18A1 1 0 0 0 6 3v18a1 1 0 0 0 1.57.82l13-9a1 1 0 0 0 0-1.64z"></path>
+                                                        </svg>
+                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" role="img" class="icon-player-pause" aria-label="Pause">
+                                                            <path fill="currentColor" d="M5 4a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1zm9 0a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1z"></path>
+                                                        </svg>
+                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" role="img" class="icon-player-loading" aria-label="Loading…">
+                                                            <path fill="currentColor" fill-rule="evenodd" d="M21 12a9 9 0 0 0-9-9V1A11 11 0 1 1 1 12h2a9 9 0 1 0 18 0" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" role="img" class="icon-player-restart" aria-label="Restart">
+                                                            <path fill="currentColor" d="M12 4a8 8 0 1 1-7.42 11H2.46A10 10 0 1 0 3 7.64V4H1v7h7V9H4.58A8 8 0 0 1 12 4"></path>
+                                                        </svg>
+                                                    </player-audio-button>
+                                                </div>
+                                            </div>
+                                            <header class="track-highlight-tile-player-header" ng-class="::{ forked: vm.revision.song.isFork }">
+                                                <div class="track-highlight-tile-player-titles">
+                                                    <div class="track-highlight-tile-player-main-title">
+                                                        <!-- ngIf: !vm.post.track -->
+                                                        <a ng-if="!vm.post.track" class="track-highlight-tile-title text-truncate ng-binding ng-scope" ui-sref="track({ id: vm.post.id, revId: vm.revision.id })" href="/redirectTo/track/c7f21c27-5551-4c52-be6c-f2878e3a99f0?revId=b593305e-b087-4736-b50b-399cd889c147">ใจจริงโคตรบาง </a>
+                                                        <!-- end ngIf: !vm.post.track -->
+                                                        <!-- ngIf: vm.post.track -->
+                                                        <!-- ngIf: vm.revision.post.isExplicit -->
+                                                    </div>
+                                                    <div class="track-highlight-tile-subtitle ds-meta-container ds-meta-container-layout-truncate-last" style="--ds-meta-glyphs-color: auto">
+                                                        <project-author revision="vm.revision" song="vm.revision.song" class="ds-meta-item ng-isolate-scope">
+                                                            <!-- ngIf: vm.song.author.type === 'Band' -->
+                                                            <!-- ngIf: (vm.song.author.type === 'User') -->
+                                                            <span ng-if="(vm.song.author.type === 'User')" class="ng-scope">
+                                                                <a ui-sref="user.feed({ username: vm.revision.creator.username || vm.song.author.username, triggeredFrom: vm.triggeredFrom })" ng-attr-target="{{ vm.hasWebviewCookie() ? '_blank' : '' }}" class="ng-binding" href="/redirectTo/gooneebugseeder" target="">Goonee'</a>
+                                                            </span>
+                                                            <!-- end ngIf: (vm.song.author.type === 'User') -->
+                                                            <!-- ngIf: (vm.song.counters.collaborators > 0 && vm.song.author.type === 'User') -->
+                                                        </project-author>
+                                                        <span class="ds-meta-item ng-binding">2026 </span>
+                                                    </div>
+                                                    <div class="track-highlight-tile-duration">
+                                                        <!-- ngIf: vm.currentTime -->
+                                                        <span class="ng-binding">3:09 </span>
+                                                    </div>
+                                                    <revision-player-audio class="hide-for-medium-down revision-player-area-waveform ng-isolate-scope" bar-width="4" current-time="vm.currentTime" post="vm.post" revision="vm.revision">
+                                                        <div class="revision-player-audio-waveform" player-audio="vm.revision" post="vm.post" ng-class="{ processing: vm.revision.mixdown.status !== 'Ready', silent: !vm.revision.mixdown.duration }">
+                                                            <!-- ngIf: vm.revision.mixdown.duration -->
+                                                            <time-markers ng-if="vm.revision.mixdown.duration" post="vm.post" revision="vm.revision" class="ng-scope"></time-markers>
+                                                            <!-- end ngIf: vm.revision.mixdown.duration -->
+                                                            <span player-audio-button-toggle="" class="visually-hidden"></span>
+                                                        </div>
+                                                        <!-- ngIf: vm.revision.mixdown.status !== 'Ready' -->
+                                                    </revision-player-audio>
+                                                </div>
+                                            </header>
+                                        </div>
+                                    </track-highlight-tile>
+                                </div>
+                            </div>
+                        </div>
+                        <!---->
+                    </div>
+                </section>
+                <section class="bandlab-epk-pages-showcase-photos-section">
+                    <div class="bandlab-epk-pages-block-edit-container bandlab-epk-pages-showcase-photos-edit-block">
+                        <div class="bandlab-epk-pages-showcase-photos-wrapper">
+                            <h2 class="bandlab-epk-pages-showcase-section-title bandlab-epk-pages-showcase-photos-title" style="min-width: 416px;">Artist photos </h2>
+                            <div class="bandlab-epk-pages-showcase-photos-section-gallery">
+                                <img src="https://bl-prod-images.azureedge.net/v1.3/users/1a8cdac8-10c0-475e-bcdd-a28a66995bb4/" class="bandlab-epk-pages-showcase-photos-section-photo" alt="">
+                            </div>
+                        </div>
+                        <!---->
+                    </div>
+                </section>
+                <div class="bandlab-epk-pages-showcase-contacts-social-section bandlab-epk-pages-content-section">
+                    <section id="bandlab-epk-pages-social-section" class="bandlab-epk-pages-showcase-social-section">
+                        <div class="bandlab-epk-pages-block-edit-container">
+                            <div class="bandlab-epk-pages-showcase-social-content">
+                                <div class="bandlab-epk-pages-showcase-contacts-social-header">
+                                    <h2 class="bandlab-epk-pages-showcase-section-title">Social links </h2>
+                                </div>
+                                <!---->
+                                <div class="bandlab-epk-pages-showcase-social-links">
+                                    <a class="bandlab-epk-pages-showcase-social-link undecorated-anchor" href="https://www.bandlab.com/gooneebugseeder" target="_blank">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="color: var(--ds-color-tint-red-base);">
+                                            <path fill="currentColor" d="M11.06 16.66c-1.31 0-2.11-.78-2.11-1.87 0-1.5 1.52-2.79 3.18-3.15L8.23 2h6.81l1.26 2.4h-4.77l2.84 6.96q.38.83.38 1.74c0 2.05-2.05 3.56-3.69 3.56"></path>
+                                            <path fill="currentColor" d="m18.1 7.07 2.97 5.13q.88 1.56.93 3.35C22 19.3 19.04 22 14.86 22H9.14C4.95 22 2 19.3 2 15.55q.06-1.79.92-3.35L5.9 7.07h2.79L5.2 13.12a5 5 0 0 0-.69 2.39c0 2.39 1.63 4.08 4.71 4.08h5.55c3.08 0 4.71-1.7 4.71-4.08a5 5 0 0 0-.69-2.39l-3.47-6.05z"></path>
+                                        </svg>
+                                        <div class="bandlab-epk-pages-showcase-social-link-title typography-body-default-medium text-truncate">BandLab </div>
+                                    </a>
+                                    <a class="bandlab-epk-pages-showcase-social-link bandlab-epk-pages-showcase-social-link-website undecorated-anchor" href="https://soloist.ai/goonee/" target="_blank">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path fill="currentColor" fill-rule="evenodd" d="M23 12a11 11 0 1 1-22 0 11 11 0 0 1 22 0m-6.26-3.16a17 17 0 0 0-1.78-5.34 9 9 0 0 1 5.99 7.5h-1.98a19 19 0 0 1 0 2h1.98a9 9 0 0 1-5.99 7.5q.27-.48.51-1.02A19 19 0 0 0 17 12q-.01-1.65-.26-3.16M14.97 11h-3.94a17 17 0 0 0 0 2h3.94c-.13 2.22-.66 4.2-1.32 5.66a8 8 0 0 1-1.14 1.9c-.28.31-.46.4-.51.43a2 2 0 0 1-.5-.44 8 8 0 0 1-1.15-1.89A17 17 0 0 1 9 12q0-1.49.23-2.84a15 15 0 0 1 1.56-4.69q.49-.85.9-1.22.24-.23.31-.24.07.02.32.24.4.37.9 1.22a15 15 0 0 1 1.55 4.7q.14.88.2 1.83m-7.94 0q.05-1.12.23-2.16A17 17 0 0 1 9.04 3.5 9 9 0 0 0 3.05 11zm-3.98 2h3.98c.13 2.5.73 4.77 1.5 6.48q.24.54.5 1.02A9 9 0 0 1 3.06 13" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <div class="bandlab-epk-pages-showcase-social-link-title typography-body-default-medium text-truncate">https://soloist.ai/goonee/</div>
+                                    </a>
+                                    <a class="bandlab-epk-pages-showcase-social-link bandlab-epk-pages-showcase-social-link-website undecorated-anchor" href="https://www.youtube.com/@goonee-sharkkadaw" target="_blank">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <g clip-path="url(#19758)">
+                                                <path fill="red" d="M23.5 6.19a3 3 0 0 0-2.12-2.14c-1.88-.5-9.38-.5-9.38-.5s-7.5 0-9.38.5A3 3 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3 3 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3 3 0 0 0 2.12-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81"></path>
+                                                <path fill="#fff" d="M9.57 15.57V8.43L15.84 12z"></path>
+                                            </g>
+                                            <defs>
+                                                <clipPath id="19758">
+                                                    <path fill="#fff" d="M0 0h24v24H0z"></path>
+                                                </clipPath>
+                                            </defs>
+                                        </svg>
+                                        <div class="bandlab-epk-pages-showcase-social-link-title typography-body-default-medium text-truncate">YouTube</div>
+                                    </a>
+                                </div>
+                            </div>
+                            <!---->
+                        </div>
+                    </section>
+                    <section class="bandlab-epk-pages-showcase-contacts-section">
+                        <div class="bandlab-epk-pages-block-edit-container">
+                            <div class="bandlab-epk-pages-showcase-contacts-content">
+                                <div class="bandlab-epk-pages-showcase-contacts-social-header">
+                                    <h2 class="bandlab-epk-pages-showcase-section-title">Get in touch </h2>
+                                </div>
+                                <div class="bandlab-epk-pages-showcase-contacts-cells">
+                                    <div class="bandlab-epk-pages-showcase-contacts-cell">
+                                        <h3 class="typography-body-default-medium">Phone </h3>
+                                        <p class="typography-body-compact-regular text-truncate">+66829932938</p>
+                                    </div>
+                                    <div class="bandlab-epk-pages-showcase-contacts-cell">
+                                        <h3 class="typography-body-default-medium">Email </h3>
+                                        <p class="typography-body-compact-regular text-truncate">gooneeshark@gmail.com</p>
+                                    </div>
+                                    <div class="bandlab-epk-pages-showcase-contacts-cell">
+                                        <h3 class="typography-body-default-medium">Website </h3>
+                                        <a href="https://soloist.ai/goonee/" class="typography-body-compact-regular text-truncate undecorated-anchor" target="_blank">https://soloist.ai/goonee/</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!---->
+                        </div>
+                    </section>
+                </div>
+                <div class="bandlab-epk-pages-showcase-footer">
+                    <div class="bandlab-epk-pages-showcase-footer-logo">
+                        <span class="typography-body-compact-regular">Powered by</span>
+                        <svg width="106.8" height="24" viewBox="0 0 178 40" aria-label="BandLab" role="img" fill="none" data-theme="dark">
+                            <path fill="var(--bandlab-logotype-logo-color)" d="M14.5 27.4c-2.1 0-3.4-1.2-3.4-3 0-2.3 2.5-4.4 5.1-5L10 4h10.9l2 3.9h-7.7l4.6 11c.4 1 .6 1.9.6 2.9 0 3.2-3.3 5.7-6 5.7Zm11.3-15.3 4.7 8.2a11.8 11.8 0 0 1 1.5 5.4c0 6-4.7 10.3-11.4 10.3h-9.2C4.7 36 0 31.7 0 25.7c0-1.9.6-3.7 1.5-5.4l4.7-8.2h4.5L5 21.8a8 8 0 0 0-1 3.8c0 3.8 2.5 6.5 7.5 6.5h8.8c5 0 7.6-2.7 7.6-6.5a8 8 0 0 0-1.1-3.8L21.3 12h4.5Z"></path>
+                            <path fill="var(--bandlab-logotype-type-color)" d="M50.9 8.2c4.3 0 7.4 2.4 7.4 6.4a5 5 0 0 1-2.8 4.7 5.8 5.8 0 0 1 4.3 5.8c0 4.3-3.3 6.9-8.3 6.9h-8.7V8.2h8Zm-4.1 20.3h4.5c2.6 0 4.3-1.3 4.3-3.6 0-2.2-1.7-3.5-4.4-3.5h-4.4v7Zm0-10.5h3.8c2.2 0 3.7-1.1 3.7-3.2s-1.5-3.1-3.7-3.1h-3.8V18Zm32.7-2.7V32h-3.8v-2.4a6.9 6.9 0 0 1-5.7 2.8c-4.6 0-8.1-3.8-8.1-8.7s3.5-8.8 8.1-8.8c2.3 0 4.4 1 5.7 2.7v-2.3h3.8Zm-13.7 8.4c0 2.9 2.2 5.1 5 5.1s5-2.2 5-5.1-2.1-5.2-5-5.2-5 2.3-5 5.2ZM87.4 32h-4V15.3h4v2.2a5.8 5.8 0 0 1 5-2.6c4.1 0 6.5 2.7 6.5 7V32H95v-9.3c0-2.6-1.3-4.1-3.7-4.1-2.4 0-4 1.8-4 4.6V32Zm28.2-2.4a7 7 0 0 1-5.6 2.8c-4.6 0-8.1-3.8-8.1-8.7 0-5 3.5-8.8 8-8.8 2.4 0 4.5 1 5.7 2.7V8.2h4V32h-4v-2.4Zm-9.8-6c0 3 2.2 5.2 5 5.2s5-2.2 5-5.1-2.2-5.2-5-5.2-5 2.3-5 5.2Zm22.4-15.4v20h9V32H124V8.2h4Zm27.3 7.1V32h-3.8v-2.4a6.9 6.9 0 0 1-5.7 2.8c-4.6 0-8.1-3.8-8.1-8.7s3.5-8.8 8.1-8.8c2.3 0 4.5 1 5.7 2.7v-2.3h3.8Zm-13.7 8.4c0 2.9 2.2 5.1 5 5.1s5-2.2 5-5.1-2.1-5.2-5-5.2-5 2.3-5 5.2Zm17.6 8.3V8.2h4v9.5A7 7 0 0 1 169 15c4.6 0 8.1 3.8 8.1 8.8 0 4.9-3.5 8.7-8 8.7a6.9 6.9 0 0 1-5.7-2.7V32h-4Zm3.8-8.3c0 2.9 2.2 5.1 5 5.1s5-2.2 5-5.1-2.2-5.2-5-5.2-5 2.3-5 5.2Z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <modal-group data-v-app=""></modal-group>
+    <div class="grid-block shrink global-player ng-isolate-scope" data-theme="dark">
+        <div class="player-container adaptive-content" ng-class="nowPlayingEnabled ? 'global-player-now-playing' : ''">
+            <!-- ngIf: revision.song.isSounds || revision.song.isBeats -->
+            <!-- ngIf: (revision.creator || revision.song.author) && !revision.song.isSounds && !revision.song.isBeats -->
+            <div class="global-player-center">
+                <div class="global-player-button-group hide-for-medium-down">
+                    <button type="button" class="global-player-transparent-button" ng-click="playPrevious()" aria-label="Previous">
+                        <svg width="20" height="20" viewBox="0 0 20 20" name="skip-back" size="20" data-v-app="">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" name="skip-back">
+                                <path fill="currentColor" d="M6 4a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm16-.13v16.26a1 1 0 0 1-1.55.83l-12.2-8.13a1 1 0 0 1 0-1.66l12.2-8.13a1 1 0 0 1 1.55.83"></path>
+                            </svg>
+                        </svg>
+                    </button>
+                    <button type="button" class="ds-play-button-size-compact ds-play-button ds-play-button-type-primary global-player-player-button disabled" ng-class="{ disabled: revision.id === '', 'status-playing': isPlaying() &amp;&amp; status === 'loaded', 'status-paused': !isPlaying() &amp;&amp; status === 'loaded', 'status-loading': status === 'loading' }" ng-click="togglePlay()" aria-label="Play">
+                        <player-audio-button class="player-audio-controls" data-v-app="">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" role="img" class="icon-player-play" aria-label="Play">
+                                <path fill="currentColor" d="M7.57 2.18A1 1 0 0 0 6 3v18a1 1 0 0 0 1.57.82l13-9a1 1 0 0 0 0-1.64z"></path>
+                            </svg>
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" role="img" class="icon-player-pause" aria-label="Pause">
+                                <path fill="currentColor" d="M5 4a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1zm9 0a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1z"></path>
+                            </svg>
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" role="img" class="icon-player-loading" aria-label="Loading…">
+                                <path fill="currentColor" fill-rule="evenodd" d="M21 12a9 9 0 0 0-9-9V1A11 11 0 1 1 1 12h2a9 9 0 1 0 18 0" clip-rule="evenodd"></path>
+                            </svg>
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" role="img" class="icon-player-restart" aria-label="Restart">
+                                <path fill="currentColor" d="M12 4a8 8 0 1 1-7.42 11H2.46A10 10 0 1 0 3 7.64V4H1v7h7V9H4.58A8 8 0 0 1 12 4"></path>
+                            </svg>
+                        </player-audio-button>
+                    </button>
+                    <button type="button" class="global-player-transparent-button" ng-disabled="!playerHistory.hasNext()" ng-click="playNext()" aria-label="Next" disabled="disabled">
+                        <svg width="20" height="20" viewBox="0 0 20 20" name="skip-forward" size="20" data-v-app="">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" name="skip-forward">
+                                <path fill="currentColor" d="M18 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1zM2 3.87v16.26a1 1 0 0 0 1.55.83l12.2-8.13a1 1 0 0 0 0-1.66L3.55 3.04A1 1 0 0 0 2 3.87"></path>
+                            </svg>
+                        </svg>
+                    </button>
+                </div>
+                <div class="hide-for-medium-down" style="display: flex; justify-content: center;">
+                <!-- ngIf: (revision.creator || revision.song.author) && !revision.song.isSounds && !revision.song.isBeats && !revision.song.isPagesEPK -->
+                <!-- ngIf: queue -->
+                </div>
+                <div class="global-player-progress">
+                    <div class="global-player-duration hide-for-medium-down">
+                        <span class="global-player-duration-time ng-binding">0:00</span>
+                        <div class="show-for-medium-only text-center text-truncate">
+                            <!-- ngIf: revision.song.isBeats -->
+                            <!-- ngIf: revision.features || revision.samplesCount -->
+                            <!-- ngIf: revision.creator || revision.song.author -->
+                            <div class="global-player-artist">
+                                <project-author revision="revision" song="revision.song" class="ng-isolate-scope">
+                                <!-- ngIf: vm.song.author.type === 'Band' -->
+                                <!-- ngIf: (vm.song.author.type === 'User') -->
+                                <!-- ngIf: (vm.song.counters.collaborators > 0 && vm.song.author.type === 'User') -->
+                                </project-author>
+                            </div>
+                        </div>
+                        <span class="global-player-duration-time ng-binding">0:00</span>
+                    </div>
+                    <div class="global-player-progress-container" progress="" progress-on-start="setProgressTime" progress-on-move="setProgressTime">
+                        <div class="global-player-progress-background">
+                            <div class="global-player-progress-go"></div>
+                            <div class="global-player-progress-bar ng-hide" ng-show="status === 'loaded'" ng-style="{ width: progress + '%' }"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="global-player-social hide-for-medium-down" ng-class="{ 'disabled': isSocialDisabled() }">
+                <div class="global-player-controls">
+                    <!-- ngIf: (revision.creator || revision.song.author) && !revision.song.isSounds && !revision.song.isBeats -->
+                    <!-- ngIf: (revision.creator || revision.song.author) && !revision.song.isSounds && !revision.song.isBeats -->
+                    <!-- ngIf: nowPlayingEnabled && nowPlayingStatus && (revision.creator || revision.song.author) && !revision.song.isSounds && !revision.song.isBeats -->
+                    <!-- ngIf: revision.song.isSounds -->
+                    <div class="hide-for-medium-down global-player-volume-container">
+                        <button type="button" class="global-player-transparent-button global-player-volume-button" ng-click="mute()" aria-label="Mute">
+                            <svg width="20" height="20" viewBox="0 0 20 20" ng-show="volume === 0" name="volume-x" size="20" class="ng-hide" data-v-app="">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" name="volume-x">
+                                    <path fill="currentColor" fill-rule="evenodd" d="M8.48 3.4A2 2 0 0 1 12 4.7v14.6a2 2 0 0 1-3.52 1.3L4.54 16H2a2 2 0 0 1-2-2v-4c0-1.1.9-2 2-2h2.54zM10 19.3V4.7L6.06 9.3a2 2 0 0 1-1.52.7H2v4h2.54a2 2 0 0 1 1.52.7z" clip-rule="evenodd"></path>
+                                    <path fill="currentColor" d="m17.77 12-2.48 2.47 1.42 1.42 2.47-2.48 2.48 2.48 1.41-1.42L20.6 12l2.47-2.47-1.41-1.42-2.48 2.48-2.47-2.48-1.42 1.42z"></path>
+                                </svg>
+                            </svg>
+                            <svg width="20" height="20" viewBox="0 0 20 20" ng-show="volume &gt; 0 &amp;&amp; volume &lt;= .4" name="volume-bar-1" size="20" class="ng-hide" data-v-app="">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" name="volume-bar-1">
+                                    <path fill="currentColor" fill-rule="evenodd" d="M8.48 3.4A2 2 0 0 1 12 4.7v14.6a2 2 0 0 1-3.52 1.3L4.54 16H2a2 2 0 0 1-2-2v-4c0-1.1.9-2 2-2h2.54zM10 19.3V4.7L6.06 9.3a2 2 0 0 1-1.52.7H2v4h2.54a2 2 0 0 1 1.52.7zm4-4.3V9h2v6z" clip-rule="evenodd"></path>
+                                    <path fill="currentColor" fill-rule="evenodd" d="M18 17V7h2v10zm4 2V5h2v14z" clip-rule="evenodd" opacity=".15"></path>
+                                </svg>
+                            </svg>
+                            <svg width="20" height="20" viewBox="0 0 20 20" ng-show="volume &gt; .4 &amp;&amp; volume &lt;= .7" name="volume-bar-2" size="20" class="ng-hide" data-v-app="">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" name="volume-bar-2">
+                                    <path fill="currentColor" fill-rule="evenodd" d="M12 4.7a2 2 0 0 0-3.52-1.3L4.54 8H2a2 2 0 0 0-2 2v4c0 1.1.9 2 2 2h2.54l3.94 4.6A2 2 0 0 0 12 19.3zm-2 0v14.6l-3.94-4.6a2 2 0 0 0-1.52-.7H2v-4h2.54a2 2 0 0 0 1.52-.7z" clip-rule="evenodd"></path>
+                                    <path fill="currentColor" d="M14 9v6h2V9zm4-2v10h2V7z"></path>
+                                    <path fill="currentColor" fill-rule="evenodd" d="M22 19V5h2v14z" clip-rule="evenodd" opacity=".15"></path>
+                                </svg>
+                            </svg>
+                            <svg width="20" height="20" viewBox="0 0 20 20" ng-show="volume &gt; .7" name="volume-bar-3" size="20" data-v-app="">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" name="volume-bar-3">
+                                    <g fill="currentColor" clip-path="url(#4395)">
+                                        <path fill-rule="evenodd" d="M12 4.7a2 2 0 0 0-3.52-1.3L4.54 8H2a2 2 0 0 0-2 2v4c0 1.1.9 2 2 2h2.54l3.94 4.6A2 2 0 0 0 12 19.3zm-2 0v14.6l-3.94-4.6a2 2 0 0 0-1.52-.7H2v-4h2.54a2 2 0 0 0 1.52-.7z" clip-rule="evenodd"></path>
+                                        <path d="M14 9v6h2V9zm8-4v14h2V5zm-4 2v10h2V7z"></path>
+                                    </g>
+                                    <defs>
+                                        <clipPath id="4395">
+                                            <path fill="#fff" d="M0 0h24v24H0z"></path>
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                            </svg>
+                        </button>
+                        <div class="global-player-volume-bar-container">
+                            <div class="global-player-volume-bar">
+                                <div progress="vertical" progress-on-start="setVolume" progress-on-move="setVolume" progress-on-end="storeVolume">
+                                    <div class="global-player-volume-bar-track">
+                                        <div class="global-player-volume-bar-fill" ng-style="{ height: volume * 100 + '%' }" style="height: 100%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="global-player-button-group" ng-show="(revision.isPublic || revision.state === 'Public')">
+                    <button type="button" class="global-player-transparent-button ng-scope" ng-controller="CollectionsManageCtrl" ng-click="openAddToCollectionModal(revision.post.id || revision.postId)" ng-show="!revision.track" aria-label="Add to Playlist">
+                        <svg width="20" height="20" viewBox="0 0 20 20" name="list-plus" size="20"></svg>
+                    </button>
+                    <like style="display: contents;" like-entity="post" ng-click="toggleLike()" ng-model="revision.post" resource-id="{{ revision.post.id || revision.postId }}" class="ng-pristine ng-untouched ng-valid">
+                        <button type="button" class="global-player-transparent-button" aria-label="Like" aria-pressed="{{ revision.post.isLiked }}">
+                            <svg width="20" height="20" viewBox="0 0 20 20" ng-show="!revision.post.isLiked" name="heart" size="20"></svg>
+                            <svg width="20" height="20" viewBox="0 0 20 20" ng-show="revision.post.isLiked" name="heart-filled" size="20"></svg>
+                        </button>
+                    </like>
 
-    <div class="header-actions">
-        <h1>⚠️ ฐานข้อมูลเว็บโกง</h1>
-        <a href="mailto:gooneeshark@gmail.com?subject=แจ้งเบาะแสเว็บพนันโกง&body=1.ชื่อเว็บทีโกง:%0D%0A2.ลิ้งค์หน้าเว็บ:%0D%0A3.พฤติกรรมการโกง:%0D%0A(แนบหลักฐานการโอน/แชท ถ้ามี)" target="_blank" class="report-btn">
-            🚨 แจ้งเว็บโกง
-        </a>
+                    <button type="button" class="global-player-transparent-button" dropdown-menu="https://www.bandlab.com/web-pages/post/partials/_post-share-dropdown-menu-671777951.html" dropdown-menu-container="parent" dropdown-menu-align="right" dropdown-direction="up" dropdown-menu-parse="{ type: revision.track ? 'Track' : 'Revision', object: revision }" aria-label="Share">
+                        <svg width="20" height="20" viewBox="0 0 20 20" name="repost" size="20"></svg>
+                    </button>
+                </div>
+                <!-- ngIf: revision.song.isForkable && !revision.isFork && !revision.canEdit && !revision.song.isFork -->
+                <!-- ngIf: revision.canEdit -->
+            </div>
+            <div class="flex-for-medium-down global-player-social">
+                <!-- ngIf: !revision.features && !revision.samplesCount && !revision.song.isBeats  -->
+                <button class="global-player-transparent-button" ng-class="{ disabled: revision.id === '' }" ng-click="togglePlay()" aria-label="{{ isPlaying() ? 'Pause' : 'Play' }}">
+                    <svg width="24" height="24" viewBox="0 0 24 24" ng-show="!isPlaying()" name="play" size="24"></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" ng-show="isPlaying()" name="pause" size="24"></svg>
+                </button>
+            </div>
+        </div>
     </div>
-
-    <div class="warning-card">
-        <h3>🛡️ วิธีปฏิบัติเมื่อรู้ตัวว่า(กำลังจะ)ถูกโกง</h3>
-        <ul>
-            <li><strong>หยุดโอนเงินเพิ่มเด็ดขาด:</strong> ไม่ว่าจะอ้างค่าปลดล็อค ค่าธรรมเนียม หรือภาษี</li>
-            <li><strong>แคปรูปหลักฐานทั้งหมด:</strong> หน้าเว็บ, แชทที่คุย, สลิปโอนเงิน (ให้เห็นบัญชีปลายทางชัดเจน)</li>
-            <li><strong>ห้ามโวยวายให้แอดมินรู้ตัว:</strong> แกล้งทำเป็นจะหาเงินมาโอนเพิ่ม เพื่อถ่วงเวลาไม่ให้มันบล็อคแล้วดึงข้อมูลออกมา</li>
-            <li><strong>แจ้งอายัดบัญชี:</strong> หากตกเป็นเหยื่อ สามารถแจ้งความออนไลน์ได้ที่ www.thaipoliceonline.com หรือโทรสายด่วน 1441 ตลอด 24 ชั่วโมง(อย่ากลัวโดนค่าปรับ คนเล่นเสียค่าปรับแค่500บาท)</li>
-        </ul>
+    <script type="module" src="https://www.bandlab.com/web-pages/scripts/CI8c2NNc.js"></script>
+    <iframe height="0" width="0" style="display: none; visibility: hidden;"></iframe>
+    <div class="notification-container ng-scope ng-isolate-scope" id="b9e85762-ea55-5f40-58dd-da54f88c54d3">
+        <!-- ngRepeat: notification in vm.notifications track by notification.id -->
+        <project-uploader></project-uploader>
     </div>
-
-    <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="ค้นหาชื่อเว็บที่มีประวัติโกง..." oninput="filterSites()">
-    </div>
-
-    <div class="scam-list" id="scamList">
-        <!-- ข้อมูลเว็บโกงจะถูกแทรกที่นี่ -->
-    </div>
-    <div class="empty-state" id="emptyState">
-        ไม่พบข้อมูลเว็บที่ค้นหา.<br>หากเว็บนี้โกง รบกวนกดปุ่ม "แจ้งเว็บโกง" ด้านบน
-    </div>
-
-    <script>
-        const scamSites = [
-                { name: "FinzaBet", reason: "ถอนยอดใหญ่ไม่ได้ อ้างเกมบัค จ่ายไม่เต็มยอด" },
-    { name: "Topfunz", reason: "แจ้งถอนแล้วแอดมินไม่ทำรายการ ไม่ตอบแชท" },
-    { name: "MONEYPLUS99", reason: "อ้างระบบถอนขัดข้อง สุดท้ายไม่ตอบแชท น่าจะบล็อคยูส" },
-    { name: "168lt", reason: "ถูกหวยไม่จ่าย กดยกเลิกและลบโพย แชทไม่ตอบ" },
-    { name: "juad123x", reason: "อ้างยอดฝากไม่สมดุล หลอกให้เติมเงินเพิ่มเพื่อปลดลิมิต" },
-    { name: "UFA24MAX", reason: "ถอนไม่ได้ อ้างใช้บอทเล่น คืนทุนตัดกำไรทิ้ง" },
-    { name: "ไทยลอตเตอรี่", reason: "ถูกหวย 4 ตัวตรงไม่จ่าย ปิดยูสหนี" },
-    { name: "g-pro", reason: "ถอนไม่ได้ อ้างคนถอนเยอะ สุดท้ายแอดมินหายไม่ตอบ" },
-    { name: "ALPHA888", reason: "ถอนไม่ได้ อ้างเล่นผิดปกติ คืนแค่ทุน" },
-    { name: "TKSLOT", reason: "ฝากเงินแล้วยอดไม่เข้า ไม่มีแอดมินตอบ" },
-    { name: "cool88", reason: "ถูกหวยไม่จ่าย อ้างเลขล็อค ยกเลิกโพยอัตโนมัติ" },
-    { name: "winbox88thai", reason: "แจ้งถอนแล้วปิดยูสทันที" },
-    { name: "omg555", reason: "กดถอนแล้วเข้าระบบไม่ได้ แอดมินไม่ตอบไลน์" },
-    { name: "Great798.site", reason: "เล่นสล็อตแตกยอด 89,742 ถอน 50,000 ไม่ได้ อ้างธนาคารขัดข้อง/ตรวจสอบ เลื่อนจ่ายหลายรอบ สุดท้ายแอดมินหาย" },
-    { name: "Luca123.ctmx.online", reason: "เว็บบิด ถอนเงินไม่ได้หลังฝากและเล่นยอดสูง" },
-    { name: "หวยใต้ดินออนไลน์", reason: "ถูกหวยไม่จ่าย ยกเลิกถอน ไลน์ไม่ตอบ โกงยอดหลายพัน" },
-    { name: "หวยสมหวัง", reason: "ถูกหวยไม่จ่าย โกงยอด 4,000 บาท เล่นครั้งแรกเจอโกงทันที" },
-    { name: "UFA24MAX", reason: "ถอนยอดใหญ่ไม่ได้ อ้างใช้บอทเล่น คืนเฉพาะทุน ตัดกำไรทิ้ง (เคสยอด 78k+)" },
-    { name: "หวยไทยออนไลน์", reason: "ถูกหวยหลายหมื่นไม่จ่าย อ้างระบบล้ม/ตรวจสอบ สุดท้ายปิดหนี" },
-    { name: "SharkBlueSlot", reason: "เปลี่ยนธีมเว็บเป็นฉลามสีน้ำเงิน ถอนยอดใหญ่ไม่ได้ แอดมินเลื่อนเหตุผลตลอด" },
-    { name: "EU9", reason: "ถอนยอดใหญ่ไม่ได้ อ้างเกมบัค จ่ายไม่เต็มยอด" },
-    { name: "Siam55", reason: "แจ้งถอนแล้วแอดมินไม่ทำรายการ ไม่ตอบแชท" },
-    { name: "77ruay", reason: "อ้างระบบถอนขัดข้อง สุดท้ายไม่ตอบแชท น่าจะบล็อคยูส" },
-    { name: "77neko", reason: "ถูกหวยไม่จ่าย กดยกเลิกและลบโพย แชทไม่ตอบ" },
-    { name: "77w", reason: "อ้างยอดฝากไม่สมดุล หลอกให้เติมเงินเพิ่มเพื่อปลดลิมิต" },
-    { name: "77slot", reason: "ถอนไม่ได้ อ้างใช้บอทเล่น คืนทุนตัดกำไรทิ้ง" },
-    { name: "puntaek789", reason: "ถูกหวย 4 ตัวตรงไม่จ่าย ปิดยูสหนี" },
-    { name: "OHANA888", reason: "ถอนไม่ได้ อ้างคนถอนเยอะ สุดท้ายแอดมินหายไม่ตอบ" },
-    { name: "OHANA999", reason: "ถอนไม่ได้ อ้างเล่นผิดปกติ คืนแค่ทุน" },
-    { name: "star99", reason: "ยอดถอนนิ่งหลายวัน ไม่มีแอดมินตอบ" },
-    { name: "act96", reason: "ถอน 2 หมื่นปิดยูส เล่นค่ายFC แอดมินบอกเดิมพันผิดปกติค่ายPG ตลกวนหลูบ" },
-    { name: "win77th", reason: "แจ้งถอนแล้วปิดยูสทันที" },
-    { name: "siam8th", reason: "กดถอนแล้วเข้าระบบไม่ได้ แอดมินไม่ตอบไลน์" },
-    { name: "HuyTaiDin", reason: "หวยใต้ดินโกง หลีกเลี่ยงการจ่ายเงินรางวัล" }
-        ];
-
-        function renderSites(sites) {
-            const list = document.getElementById('scamList');
-            const emptyState = document.getElementById('emptyState');
-            
-            list.innerHTML = '';
-            
-            if(sites.length === 0) {
-                emptyState.style.display = 'block';
-            } else {
-                emptyState.style.display = 'none';
-                sites.forEach(site => {
-                    const el = document.createElement('div');
-                    el.className = 'scam-item';
-                    el.innerHTML = `
-                        <div class="scam-name">${site.name}</div>
-                        <div class="scam-reason">❌ ${site.reason}</div>
-                    `;
-                    list.appendChild(el);
-                });
-            }
-        }
-
-        function filterSites() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = scamSites.filter(site => 
-                site.name.toLowerCase().includes(query) || 
-                site.reason.toLowerCase().includes(query)
-            );
-            renderSites(filtered);
-        }
-
-        // โหลดครั้งแรก
-        renderSites(scamSites.sort((a,b) => a.name.localeCompare(b.name)));
-    </script>
 </body>
 </html>

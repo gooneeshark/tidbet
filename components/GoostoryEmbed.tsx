@@ -8,7 +8,7 @@ const getGoogleFavicon = (url: string) => {
   try {
     // ตรวจสอบว่าเป็น command พิเศษหรือไม่
     if (url.startsWith('command://')) return null;
-    
+
     const domain = new URL(url).hostname;
     return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
   } catch (error) {
@@ -127,66 +127,77 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
   useEffect(() => {
     localStorage.setItem('goo_ui_zoom', String(uiZoom));
   }, [uiZoom]);
-  
+
   useEffect(() => {
     // Matrix background effect
     const canvas = document.getElementById("matrix") as HTMLCanvasElement;
     if (!canvas) return;
-    
-    const ctx = canvas.getContext("2d");
+
+    const ctx = canvas.getContext("2d", { alpha: false }); // ใช้ alpha: false ช่วยเรื่อง render
     if (!ctx) return;
 
-    canvas.height = window.innerHeight;
-    canvas.width = window.innerWidth;
+    let animationFrameId: number;
+    let lastTime = 0;
+    const fps = 15; // กำหนด FPS ที่ต้องการ
+    const nextFrameTime = 1000 / fps;
 
     const letters = "アイウエオカキクケコサシスセソタチツテトナニヌネโน101010";
     const fontSize = 16;
-    let columns = canvas.width / fontSize;
-    let drops: number[] = [];
+    let columns = Math.floor(window.innerWidth / fontSize);
+    let drops: number[] = new Array(columns).fill(1);
 
-    for (let x = 0; x < columns; x++) drops[x] = 1;
-
-    function draw() {
-      if (!ctx || !canvas) return;
-      ctx.fillStyle = customBg ? "rgba(0,0,0,0.3)" : theme.matrixFade;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.font = fontSize + "px monospace";
-      for (let i = 0; i < drops.length; i++) {
-        const text = letters.charAt(Math.floor(Math.random() * letters.length));
-
-        const c = theme.matrixColors[Math.floor(Math.random() * theme.matrixColors.length)] || '#ffffff';
-        ctx.fillStyle = c;
-        
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-        drops[i]++;
-      }
-    }
-
-    const interval = setInterval(draw, 50);
-
-    const handleResize = () => {
-      canvas.height = window.innerHeight;
+    const resizeCanvas = () => {
       canvas.width = window.innerWidth;
-      columns = canvas.width / fontSize;
-      drops = [];
-      for (let x = 0; x < columns; x++) drops[x] = 1;
+      canvas.height = window.innerHeight;
+      columns = Math.floor(canvas.width / fontSize);
+      drops = new Array(columns).fill(1);
     };
 
-    window.addEventListener('resize', handleResize);
+    const draw = (timestamp: number) => {
+      const deltaTime = timestamp - lastTime;
+
+      if (deltaTime > nextFrameTime) {
+        lastTime = timestamp - (deltaTime % nextFrameTime);
+
+        // วาดพื้นหลังจางๆ เพื่อสร้าง Trail
+        ctx.fillStyle = customBg ? "rgba(0, 0, 0, 0.15)" : theme.matrixFade;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.font = `${fontSize}px monospace`;
+
+        for (let i = 0; i < drops.length; i++) {
+          const text = letters.charAt(Math.floor(Math.random() * letters.length));
+
+          // สุ่มเลือกสีจาก Theme
+          const c = theme.matrixColors[Math.floor(Math.random() * theme.matrixColors.length)] || '#ffffff';
+          ctx.fillStyle = c;
+
+          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+          // รีเซ็ตตำแหน่งเมื่อตกขอบจอ
+          if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i]++;
+        }
+      }
+
+      // วน Loop การวาดด้วยประสิทธิภาพสูงสุด
+      animationFrameId = requestAnimationFrame(draw);
+    };
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas(); // Initialize size
+    animationFrameId = requestAnimationFrame(draw);
 
     return () => {
-      clearInterval(interval);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', resizeCanvas);
+      cancelAnimationFrame(animationFrameId);
     };
   }, [customBg, theme]);
 
   // No longer needed as we use the GSAP topbar in index.html
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   const randomizeTheme = () => {
     setThemeId(getRandomThemeId(themeId));
@@ -225,11 +236,11 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
       isUserAdded: false,
       isFavorite: true
     };
-    
+
     // 2. Merge external sites from card.json
     externalSites.forEach(ext => {
-      const idx = merged.findIndex(s => 
-        (s.url && ext.url && s.url.toLowerCase() === ext.url.toLowerCase()) || 
+      const idx = merged.findIndex(s =>
+        (s.url && ext.url && s.url.toLowerCase() === ext.url.toLowerCase()) ||
         (s.name && ext.name && s.name.toLowerCase() === ext.name.toLowerCase())
       );
       if (idx !== -1) {
@@ -248,8 +259,8 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
       };
       const usHost = getHost(us.url);
 
-      const idx = merged.findIndex(s => 
-        (s.url && us.url && s.url.toLowerCase() === us.url.toLowerCase()) || 
+      const idx = merged.findIndex(s =>
+        (s.url && us.url && s.url.toLowerCase() === us.url.toLowerCase()) ||
         (s.name && us.name && s.name.toLowerCase() === us.name.toLowerCase()) ||
         (usHost && getHost(s.url) === usHost)
       );
@@ -258,15 +269,15 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
         // Prioritize image/logo from merged (external/base) if the user one is just a google favicon
         const current = merged[idx];
         const isUserJustGoogle = us.logo?.includes('google.com/s2/favicons');
-        
-        merged[idx] = { 
-          ...current, 
-          ...us, 
+
+        merged[idx] = {
+          ...current,
+          ...us,
           // If the user version has a generic google logo, prefer the one from merged (external)
           logo: isUserJustGoogle && current.logo ? current.logo : (us.logo || current.logo),
           // Prioritize external image if available and user doesn't have a specific one
           image: current.image || us.image,
-          isUserAdded: true 
+          isUserAdded: true
         };
       } else {
         merged.unshift({ ...us, isUserAdded: true });
@@ -290,7 +301,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
     return merged;
   }, [externalSites, userShortcuts, favorites]);
 
-  const filteredSites = allSites.filter(site => 
+  const filteredSites = allSites.filter(site =>
     site.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -307,10 +318,10 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
   const handleAddShortcut = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newShortcut.name || !newShortcut.url) return;
-    
+
     const formattedUrl = newShortcut.url.startsWith('http') ? newShortcut.url : `https://${newShortcut.url}`;
     const domain = new URL(formattedUrl).hostname;
-    
+
     const shortcut: Shortcut = {
       id: Date.now().toString(),
       name: newShortcut.name,
@@ -380,7 +391,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
   const toggleFavorite = (url: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setFavorites(prev => 
+    setFavorites(prev =>
       prev.includes(url) ? prev.filter(u => u !== url) : [...prev, url]
     );
   };
@@ -402,18 +413,18 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
     setCustomBg(null);
     localStorage.removeItem('custom_bg');
   };
-  
+
   // Resize logic
   const handleResizeStart = (e: React.MouseEvent | React.TouchEvent) => {
     // Only handle primary touch or left-click
     if ('button' in e && e.button !== 0) return;
-    
+
     e.preventDefault();
     setIsResizing(true);
-    
+
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-    
+
     const startX = clientX;
     const startY = clientY;
     const startWidth = browserSize.width;
@@ -422,10 +433,10 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
     const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
       const currentX = 'touches' in moveEvent ? moveEvent.touches[0].clientX : moveEvent.clientX;
       const currentY = 'touches' in moveEvent ? moveEvent.touches[0].clientY : moveEvent.clientY;
-      
+
       const deltaX = currentX - startX;
       const deltaY = currentY - startY;
-      
+
       setBrowserSize({
         width: Math.max(280, Math.min(window.innerWidth - 20, startWidth + deltaX * 2)),
         height: Math.max(150, Math.min(window.innerHeight * 0.8, startHeight - deltaY))
@@ -447,19 +458,19 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
   };
 
   return (
-    <div 
-      className="fixed inset-0 z-0 overflow-y-auto bg-black bg-cover bg-center bg-no-repeat transition-all duration-700"
-      style={{ ...(customBg ? { backgroundImage: `url(${customBg})` } : {}), paddingTop: 'calc(100px + var(--goo-topbar-safe-top, 0px))' }}
+    <div
+      className="fixed z-0 overflow-y-auto bg-black bg-cover bg-center bg-no-repeat transition-all duration-700"
+      style={{ ...(customBg ? { backgroundImage: `url(${customBg})` } : {}), top: 'var(--goo-topbar-safe-top, 0px)', bottom: 0, left: 0, right: 0 }}
     >
       {/* Overlay for readability if custom background exists */}
       {customBg && <div className="fixed inset-0 bg-black/40 z-[-1]"></div>}
 
       <canvas id="matrix" className="fixed top-0 left-0 z-0 pointer-events-none opacity-40"></canvas>
-      
+
       {/* Settings Menu */}
       <div
         className="fixed right-4 z-50 flex gap-2"
-        style={{ top: 'calc(1rem + 100px + var(--goo-topbar-safe-top, 0px))' }}
+        style={{ top: 'calc(1rem + var(--goo-topbar-safe-top, 0px))' }}
       >
         <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 shadow-lg">
           <select
@@ -494,7 +505,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
             บันทึก
           </button>
         </div>
-        <button 
+        <button
           onClick={() => setShowGridSettings(true)}
           aria-label="ตั้งค่าการแสดงผล"
           className="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white transition-all border border-white/10 group shadow-lg"
@@ -505,7 +516,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </button>
-        <button 
+        <button
           onClick={() => fileInputRef.current?.click()}
           aria-label="เปลี่ยนพื้นหลัง"
           className="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white transition-all border border-white/10 group shadow-lg"
@@ -516,7 +527,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
           </svg>
         </button>
         {customBg && (
-          <button 
+          <button
             onClick={clearBg}
             aria-label="ล้างพื้นหลัง"
             className="p-3 bg-red-500/20 hover:bg-red-500/40 backdrop-blur-md rounded-full text-red-500 transition-all border border-red-500/20 shadow-lg"
@@ -528,18 +539,18 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
           </button>
         )}
       </div>
-      <input 
-        type="file" 
-        ref={fileInputRef} 
-        onChange={handleBgChange} 
-        className="hidden" 
-        accept="image/*" 
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleBgChange}
+        className="hidden"
+        accept="image/*"
       />
 
       <div className="relative z-10 container mx-auto px-4 py-12 flex flex-col items-center min-h-screen">
-        <div 
+        <div
           className="flex flex-col items-center w-full transition-all duration-500 ease-in-out origin-top"
-          style={{ 
+          style={{
             zoom: uiZoom,
             // Fallback for browsers that don't support zoom property
             transform: `scale(${uiZoom})`,
@@ -557,12 +568,12 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
           {/* Search Bar */}
           <div className="w-full max-w-2xl mb-20 group">
             <div className="relative group/input">
-              <input 
-                type="text" 
-                placeholder="ค้นหาเว็บไซต์ที่คุณอยากโดน..." 
+              <input
+                type="text"
+                placeholder="ค้นหาเว็บไซต์ที่คุณอยากโดน..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-black/40 backdrop-blur-3xl border-2 border-zinc-700/50 focus:border-orange-500 rounded-full px-10 py-6 text-white text-2xl transition-all outline-none shadow-[0_20px_50px_rgba(0,0,0,0.5)] group-hover:border-zinc-500 placeholder:text-zinc-600 font-medium"
+                className="w-full bg-black/40 backdrop-blur-sm border-2 border-zinc-700/50 focus:border-orange-500 rounded-full px-10 py-6 text-white text-2xl transition-all outline-none shadow-[0_20px_50px_rgba(0,0,0,0.5)] group-hover:border-zinc-500 placeholder:text-zinc-600 font-medium"
               />
               <div className="absolute right-8 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within/input:text-orange-500 transition-colors">
                 <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -573,18 +584,18 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
           </div>
 
           {/* Shortcuts Grid */}
-          <div 
+          <div
             className="grid gap-10 w-full max-w-7xl pb-48"
-            style={{ 
+            style={{
               gridTemplateColumns: `repeat(auto-fill, minmax(${Math.max(120, iconSize + 40)}px, 1fr))`,
               maxWidth: gridCols > 5 ? '100%' : `${gridCols * (iconSize + 100)}px`
             }}
           >
-            
+
             {/* Add Shortcut Button */}
-            <button 
+            <button
               onClick={() => setShowAddModal(true)}
-              className="group flex flex-col items-center p-8 rounded-[3rem] bg-white/5 hover:bg-orange-600/20 backdrop-blur-2xl transition-all duration-700 border border-white/5 hover:border-orange-500/50 shadow-2xl hover:scale-105 active:scale-95"
+              className="group flex flex-col items-center p-8 rounded-[3rem] bg-white/5 hover:bg-orange-600/20 backdrop-blur-sm transition-all duration-700 border border-white/5 hover:border-orange-500/50 shadow-2xl hover:scale-105 active:scale-95"
             >
               <div className="w-16 h-16 md:w-24 md:h-24 bg-zinc-900/90 rounded-[1.5rem] flex items-center justify-center mb-6 transition-all duration-700 group-hover:rotate-[360deg] shadow-inner group-hover:shadow-orange-500/20">
                 <svg className="w-12 h-12 text-zinc-500 group-hover:text-orange-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -595,17 +606,17 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
             </button>
 
             {filteredSites.map((site, idx) => (
-              <a 
+              <a
                 key={site.id || idx}
                 href={site.url.startsWith('command://') ? '#' : site.url}
                 onClick={(e) => handleShortcutClick(site, e)}
                 target={site.url.startsWith('command://') ? '_self' : '_blank'}
                 rel="noopener noreferrer"
-                className="shortcut-link group relative flex flex-col items-center p-8 rounded-[3rem] bg-black/30 hover:bg-white/10 backdrop-blur-2xl transition-all duration-700 border border-transparent hover:border-white/20 hover:scale-110 active:scale-95 shadow-[0_25px_60px_rgba(0,0,0,0.4)]"
+                className="shortcut-link group relative flex flex-col items-center p-8 rounded-[3rem] bg-black/30 hover:bg-white/10 backdrop-blur-sm transition-all duration-700 border border-transparent hover:border-white/20 hover:scale-110 active:scale-95 shadow-[0_25px_60px_rgba(0,0,0,0.4)]"
               >
                 {/* Top Row Toolbar */}
                 <div className="absolute top-5 left-5 right-5 flex justify-between items-center z-20 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-[-15px] group-hover:translate-y-0">
-                  <button 
+                  <button
                     onClick={(e) => toggleFavorite(site.url, e)}
                     aria-label="บันทึกรายการโปรด"
                     className={`p-2 rounded-full transition-all hover:scale-125 ${site.isFavorite ? 'bg-red-500 text-white shadow-xl shadow-red-500/40' : 'bg-black/60 text-zinc-400 border border-white/10'}`}
@@ -616,7 +627,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
                   </button>
 
                   {site.isUserAdded && (
-                    <button 
+                    <button
                       onClick={(e) => deleteShortcut(site.id!, e)}
                       aria-label="ลบโฮมเพจนี้"
                       className="p-2 bg-zinc-800 text-white rounded-full transition-all hover:bg-red-600 hover:scale-125 border border-white/10 shadow-lg"
@@ -628,13 +639,13 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
                   )}
                   <button
                     onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const url = site.url;
-                        navigateTo(url, true);
-                        setIsMiniBrowserModal(true);
-                        setIsAudioSheetOpen(true);
-                      }}
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const url = site.url;
+                      navigateTo(url, true);
+                      setIsMiniBrowserModal(true);
+                      setIsAudioSheetOpen(true);
+                    }}
                     aria-label="เปิดในมินิเบราเซอร์"
                     className="p-2 bg-black/60 text-zinc-300 rounded-full transition-all hover:bg-white/10 hover:scale-125 border border-white/5"
                     title="เปิดในมินิเบราเซอร์"
@@ -655,7 +666,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
                   </div>
                 )}
 
-                <div 
+                <div
                   className="relative bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-[2rem] flex items-center justify-center mb-6 shadow-2xl overflow-hidden group-hover:shadow-orange-600/50 group-hover:ring-4 group-hover:ring-orange-500 transition-all duration-700 group-hover:rotate-3"
                   style={{ width: `${iconSize}px`, height: `${iconSize}px` }}
                 >
@@ -676,13 +687,13 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
         </div>
 
         <div
-          className={`fixed transition-all duration-500 ease-in-out flex flex-col items-center ${
-            isMiniBrowserModal 
-              ? 'inset-0 z-[9999] justify-center p-4 bg-black/80 backdrop-blur-xl' 
-              : 'left-0 w-full z-[90] pointer-events-none'
-          }`}
+          className={`fixed transition-all duration-500 ease-in-out flex flex-col items-center ${isMiniBrowserModal
+            ? 'inset-0 z-[9999] justify-center p-4 bg-black/80 backdrop-blur-xl'
+            : 'left-0 w-full z-[90] pointer-events-none'
+            }`}
           style={isMiniBrowserModal ? {
-            paddingTop: 'calc(100px + var(--goo-topbar-safe-top, 0px))',
+            paddingTop: '16px',
+            top: 'var(--goo-topbar-safe-top, 0px)',
             paddingBottom: 'calc(40px + var(--goo-topbar-safe-bottom, 0px))'
           } : {
             bottom: 'calc(12px + var(--goo-topbar-safe-bottom, 0px) + env(safe-area-inset-bottom, 0px))'
@@ -716,44 +727,42 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
           )}
 
           <div
-            className={`overflow-hidden transition-all ease-in-out pointer-events-auto ${
-              isResizing ? '' : 'duration-500'
-            } ${
-              isMiniBrowserModal 
-                ? 'w-full max-w-5xl h-[80vh] opacity-100 scale-100' 
+            className={`overflow-hidden transition-all ease-in-out pointer-events-auto ${isResizing ? '' : 'duration-500'
+              } ${isMiniBrowserModal
+                ? 'w-full max-w-5xl h-[80vh] opacity-100 scale-100'
                 : (isAudioSheetOpen ? 'mt-3 opacity-100 scale-100 pointer-events-auto' : 'max-h-0 opacity-0 scale-95 pointer-events-none')
-            }`}
-            style={!isMiniBrowserModal && isAudioSheetOpen ? { 
-              width: `min(92vw, ${browserSize.width}px)`, 
+              }`}
+            style={!isMiniBrowserModal && isAudioSheetOpen ? {
+              width: `min(92vw, ${browserSize.width}px)`,
               height: `${browserSize.height}px`,
               maxHeight: '80vh'
             } : {}}
           >
             <div className={`relative w-full h-full flex flex-col ${theme.ui.panelBg} backdrop-blur-xl border ${theme.ui.panelBorder} ${isMiniBrowserModal ? 'rounded-[2rem]' : 'rounded-3xl'} shadow-2xl overflow-hidden`}>
-              
+
               {/* Resize Handles - Larger Hit Areas for Mobile */}
               {isAudioSheetOpen && !isMiniBrowserModal && (
                 <>
                   {/* Left Corner */}
-                  <div 
+                  <div
                     onMouseDown={handleResizeStart}
                     onTouchStart={handleResizeStart}
                     className="absolute top-0 left-0 w-12 h-12 cursor-nw-resize z-[100] group/resize flex items-start justify-start p-2"
                   >
                     <div className="w-6 h-6 border-t-4 border-l-4 border-white/20 group-hover/resize:border-orange-500 group-active/resize:border-orange-500 transition-colors rounded-tl-md"></div>
                   </div>
-                  
+
                   {/* Right Corner */}
-                  <div 
+                  <div
                     onMouseDown={handleResizeStart}
                     onTouchStart={handleResizeStart}
                     className="absolute top-0 right-0 w-12 h-12 cursor-ne-resize z-[100] group/resize flex items-start justify-end p-2"
                   >
                     <div className="w-6 h-6 border-t-4 border-r-4 border-white/20 group-hover/resize:border-orange-500 group-active/resize:border-orange-500 transition-colors rounded-tr-md"></div>
                   </div>
-                  
+
                   {/* Top Edge Handle (Thicker for touch) */}
-                  <div 
+                  <div
                     onMouseDown={handleResizeStart}
                     onTouchStart={handleResizeStart}
                     className="absolute top-0 left-12 right-12 h-6 cursor-n-resize z-[100] hover:bg-orange-500/10 active:bg-orange-500/20 transition-colors flex justify-center items-start pt-1"
@@ -766,15 +775,15 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
               {/* Browser Header / Toolbar */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/20">
                 <div className="flex items-center gap-3">
-                   <span className={`inline-flex items-center justify-center w-6 h-6 rounded-lg bg-gradient-to-r ${theme.ui.accentFrom} ${theme.ui.accentTo} text-white text-[10px] font-black`}>🌐</span>
-                   <div className="text-white font-black text-sm truncate">Mini Browser</div>
+                  <span className={`inline-flex items-center justify-center w-6 h-6 rounded-lg bg-gradient-to-r ${theme.ui.accentFrom} ${theme.ui.accentTo} text-white text-[10px] font-black`}>🌐</span>
+                  <div className="text-white font-black text-sm truncate">Mini Browser</div>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={() => {
-                        setBrowserSize({ width: 600, height: 500 }); // Reset size
+                      setBrowserSize({ width: 600, height: 500 }); // Reset size
                     }}
                     className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[10px] text-zinc-400 hover:text-white transition-all mr-2"
                     title="ล้างขนาด"
@@ -846,7 +855,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
               <div className="flex-1 w-full bg-black/20 overflow-hidden relative">
                 {/* Resize Overlay to prevent iframe from stealing mouse events */}
                 {isResizing && <div className="absolute inset-0 z-50 bg-transparent"></div>}
-                
+
                 <iframe
                   key={miniBrowserKey}
                   src={miniBrowserUrl || MINI_BROWSER_HOME}
@@ -897,22 +906,22 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
 
       {/* Grid Settings Modal */}
       {showGridSettings && (
-        <div 
+        <div
           className="fixed inset-0 z-[130] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in fade-in zoom-in duration-300"
           onClick={() => setShowGridSettings(false)}
         >
-          <div 
+          <div
             className="relative w-full max-w-md bg-zinc-900/90 border border-white/10 rounded-[3rem] p-10 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
-               type="button"
-               onClick={() => setShowGridSettings(false)}
-               className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-all"
+              type="button"
+              onClick={() => setShowGridSettings(false)}
+              className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-all"
             >
-               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-               </svg>
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
 
             <h2 className="text-2xl font-black text-white mb-8 flex items-center gap-3">
@@ -927,7 +936,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
                   <label className="text-zinc-400 text-xs font-black uppercase tracking-widest">ซูมเนื้อหาหลัก (Global Zoom)</label>
                   <span className="text-orange-400 font-black">{Math.round(uiZoom * 100)}%</span>
                 </div>
-                <input 
+                <input
                   type="range" min="0.3" max="1.5" step="0.05"
                   value={uiZoom}
                   onChange={(e) => setUiZoom(Number(e.target.value))}
@@ -941,7 +950,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
                   <label className="text-zinc-400 text-xs font-black uppercase tracking-widest">ขนาดไอคอน</label>
                   <span className="text-orange-400 font-black">{iconSize}px</span>
                 </div>
-                <input 
+                <input
                   type="range" min="60" max="200" step="4"
                   value={iconSize}
                   onChange={(e) => setIconSize(Number(e.target.value))}
@@ -955,7 +964,7 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
                   <label className="text-zinc-400 text-xs font-black uppercase tracking-widest">ขนาดตัวอักษร</label>
                   <span className="text-orange-400 font-black">{fontSize}px</span>
                 </div>
-                <input 
+                <input
                   type="range" min="10" max="32" step="1"
                   value={fontSize}
                   onChange={(e) => setFontSize(Number(e.target.value))}
@@ -974,9 +983,8 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
                     <button
                       key={n}
                       onClick={() => setGridCols(n)}
-                      className={`py-2 rounded-xl text-xs font-black transition-all ${
-                        gridCols === n ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'bg-white/5 text-zinc-500 hover:bg-white/10'
-                      }`}
+                      className={`py-2 rounded-xl text-xs font-black transition-all ${gridCols === n ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'bg-white/5 text-zinc-500 hover:bg-white/10'
+                        }`}
                     >
                       {n}
                     </button>
@@ -1010,9 +1018,9 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
             <form onSubmit={handleAddShortcut} className="space-y-8">
               <div>
                 <label className="block text-zinc-500 text-xs font-black uppercase tracking-[0.3em] mb-3 px-2">ชื่อเว็บไซต์</label>
-                <input 
+                <input
                   autoFocus
-                  type="text" 
+                  type="text"
                   value={newShortcut.name}
                   onChange={(e) => setNewShortcut(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="เช่น Google, Facebook"
@@ -1022,8 +1030,8 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
               </div>
               <div>
                 <label className="block text-zinc-500 text-xs font-black uppercase tracking-[0.3em] mb-3 px-2">ลิงก์ URL</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={newShortcut.url}
                   onChange={(e) => setNewShortcut(prev => ({ ...prev, url: e.target.value }))}
                   placeholder="เช่น google.com"
@@ -1032,14 +1040,14 @@ const GoostoryEmbed: React.FC<GoostoryEmbedProps> = memo(({ sites = [] }) => {
                 />
               </div>
               <div className="flex gap-6 pt-4">
-                <button 
+                <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
                   className="flex-1 py-6 bg-zinc-800/50 hover:bg-zinc-700 text-white font-black rounded-[2rem] transition-all text-lg uppercase tracking-widest border border-white/5"
                 >
                   ยกเลิก
                 </button>
-                <button 
+                <button
                   type="submit"
                   className="flex-1 py-6 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white font-black rounded-[2rem] transition-all text-lg uppercase tracking-widest shadow-xl shadow-orange-900/30"
                 >

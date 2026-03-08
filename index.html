@@ -38,7 +38,6 @@
     <meta name="twitter:image" content="https://i.postimg.cc/Ls5MQ7Mk/image.webp">
 
     <link rel="manifest" href="manifest.json">
-    <script src="https://unpkg.com/lucide@latest" defer></script>
 
     <script type="application/ld+json">
     {
@@ -75,10 +74,32 @@
 
 
     <!-- Fonts & Scripts -->
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="/index.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://googem.netlify.app/goo-nav.js" defer></script>
+    <script>
+        // Measure goo-nav height and set CSS variable for safe spacing
+        (function () {
+            function updateSafeTop() {
+                var nav = document.getElementById('goonav-root') || document.querySelector('[id^="goonav"]');
+                if (!nav) return;
+                var h = nav.getBoundingClientRect().height;
+                document.documentElement.style.setProperty('--goo-topbar-safe-top', h + 'px');
+            }
+            // Watch for goo-nav injection
+            var obs = new MutationObserver(function () {
+                updateSafeTop();
+                var nav = document.getElementById('goonav-root') || document.querySelector('[id^="goonav"]');
+                if (nav) {
+                    new ResizeObserver(updateSafeTop).observe(nav);
+                    obs.disconnect();
+                }
+            });
+            obs.observe(document.documentElement, { childList: true, subtree: true });
+            window.addEventListener('load', updateSafeTop);
+            window.addEventListener('resize', updateSafeTop);
+        })();
+    </script>
 
     <style>
         :root {
@@ -93,125 +114,16 @@
             overflow-x: hidden;
         }
 
-        /* --- TICKER STYLES --- */
-        .topbar-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100px;
-            z-index: 9999;
-            background: #000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            overflow-x: auto;
-            overflow-y: hidden;
-            scrollbar-width: none;
-            /* Firefox */
-            -ms-overflow-style: none;
-            /* IE/Edge */
-            cursor: grab;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .topbar-container::-webkit-scrollbar {
-            display: none;
-        }
-
-        .topbar-container:active {
-            cursor: grabbing;
-        }
-
-        .ticker-wrapper {
-            display: flex;
-            align-items: center;
-            width: max-content;
-            height: 100%;
-        }
-
-        .ticker-item {
-            flex-shrink: 0;
-            width: 240px;
-            height: 100%;
-            display: flex;
-            position: relative;
-            overflow: hidden;
-            text-decoration: none;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            background: #111;
-        }
-
-        .item-image {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.6;
-            transition: opacity 0.4s ease;
-        }
-
-        .item-image:hover {
-            opacity: 0.8;
-        }
-
-        .logo-box {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            width: 32px;
-            height: 32px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px;
-            transform: scale(0.7);
-            transform-origin: top left;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            z-index: 10;
-        }
-
-        /* --- MAIN APP OFFSET --- */
+        /* --- MAIN APP --- */
         #root {
-            margin-top: 100px;
-            /* ผลักเนื้อหาหลักลงมาให้พ้น Topbar */
-            min-height: calc(100vh - 100px);
-        }
-
-        .skeleton {
-            background: linear-gradient(90deg, #111 25%, #222 50%, #111 75%);
-            background-size: 200% 100%;
-            animation: skeleton-loading 1.5s infinite;
-        }
-
-        @keyframes skeleton-loading {
-            0% {
-                background-position: 200% 0;
-            }
-
-            100% {
-                background-position: -200% 0;
-            }
+            min-height: 100vh;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- INFINITE TOPBAR TICKER -->
-    <nav class="topbar-container" id="topbar">
-        <div class="ticker-wrapper" id="tickerWrapper">
-            <!-- Skeletons while loading -->
-            <div class="ticker-item skeleton"></div>
-            <div class="ticker-item skeleton"></div>
-            <div class="ticker-item skeleton"></div>
-            <div class="ticker-item skeleton"></div>
-            <div class="ticker-item skeleton"></div>
-        </div>
-    </nav>
+
 
     <!-- REACT APP ROOT (Goo Gemnee) -->
     <div id="root"></div>
@@ -224,165 +136,17 @@
     <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif?collect-dnt=true" alt=""
             referrerpolicy="no-referrer-when-downgrade" /></noscript>
 
-    <!-- Ticker Logic Scripts -->
-    <script>
-        const API_URL = '/card.json';
 
-        async function initTicker() {
-            try {
-                const res = await fetch(API_URL + '?t=' + Date.now());
-                const data = await res.json();
-
-                let originalItems = [];
-                if (Array.isArray(data)) originalItems = data;
-                else if (typeof data === 'object') {
-                    originalItems = Object.values(data).find(v => Array.isArray(v)) || [data];
-                }
-
-                if (originalItems.length === 0) return;
-
-                const wrapper = document.getElementById('tickerWrapper');
-                wrapper.innerHTML = '';
-
-                // Create sets for infinite loop feeling
-                const tickerData = [...originalItems, ...originalItems, ...originalItems, ...originalItems];
-                const frag = document.createDocumentFragment();
-
-                tickerData.forEach((item) => {
-                    const a = document.createElement('a');
-                    a.href = item.url || '#';
-                    a.target = "_blank";
-                    a.draggable = false;
-                    a.className = 'ticker-item';
-                    a.innerHTML = `
-                        <img src="${item.image}" class="item-image" loading="lazy" decoding="async" draggable="false" alt="Background">
-                        <div class="logo-box" style="pointer-events: none;">
-                            <img src="${item.logo}" class="w-full h-full object-contain" alt="Logo" onerror="this.src='https://www.google.com/s2/favicons?sz=64&domain=google.com'">
-                        </div>
-                    `;
-                    frag.appendChild(a);
-                });
-                wrapper.appendChild(frag);
-
-                startAutoScroll(originalItems.length);
-            } catch (e) {
-                console.error("Ticker load fail", e);
-            }
-        }
-
-        function startAutoScroll(baseCount) {
-            const container = document.getElementById('topbar');
-            let isDown = false;
-            let startX;
-            let scrollLeft;
-            let speed = 0.5;
-
-            // Drag scroll events
-            container.addEventListener('mousedown', (e) => {
-                isDown = true;
-                startX = e.pageX - container.offsetLeft;
-                scrollLeft = container.scrollLeft;
-            });
-            container.addEventListener('mouseleave', () => { isDown = false; });
-            container.addEventListener('mouseup', () => { isDown = false; });
-            container.addEventListener('mousemove', (e) => {
-                if (!isDown) return;
-                e.preventDefault();
-                const x = e.pageX - container.offsetLeft;
-                const walk = (x - startX) * 2;
-                container.scrollLeft = scrollLeft - walk;
-            });
-
-            // Native Touch events
-            container.addEventListener('touchstart', (e) => {
-                isDown = true;
-            }, { passive: true });
-            container.addEventListener('touchend', () => { isDown = false; });
-
-            function step() {
-                if (!isDown) {
-                    container.scrollLeft += speed;
-
-                    // Infinite wrap
-                    const itemWidth = 240;
-                    const oneSetWidth = itemWidth * baseCount;
-
-                    if (container.scrollLeft >= oneSetWidth * 2) {
-                        container.scrollLeft -= oneSetWidth;
-                    } else if (container.scrollLeft <= 0) {
-                        container.scrollLeft += oneSetWidth;
-                    }
-                }
-                requestAnimationFrame(step);
-            }
-            requestAnimationFrame(step);
-        }
-
-        // Delay the ticker initialization until after everything else is painted
-        window.addEventListener('load', () => {
-            setTimeout(initTicker, 500);
-        });
-
-        // --- OpenWidget Integration ---
-        async function loadOpenWidgetRecommendations() {
-            try {
-                const res = await fetch('/card.json?t=' + Date.now());
-                const data = await res.json();
-
-                let sites = [];
-                if (data && Array.isArray(data.sites)) {
-                    sites = data.sites;
-                }
-
-                if (sites.length === 0) return;
-
-                // Map to a generic product recommendation format
-                const products = sites.map(site => ({
-                    title: site.name,
-                    description: site.tagline,
-                    url: site.url,
-                    image: site.image || site.logo,
-                    price: { value: 0, currency: 'THB' }
-                }));
-
-                // Push to OpenWidget configuration
-                window.__ow = window.__ow || {};
-
-                // Try different common properties for product recommendations
-                window.__ow.product_recommendations = products;
-                window.__ow.products = products;
-                window.__ow.widget_content = window.__ow.widget_content || {};
-                window.__ow.widget_content.product_recommendations = products;
-
-                // If OpenWidget has a specific API method once loaded:
-                if (window.OpenWidget) {
-                    window.OpenWidget.on('ready', function () {
-                        try {
-                            window.OpenWidget.call('setWidgetContent', { product_recommendations: products });
-                        } catch (e) {
-                            console.log("OpenWidget specific call not supported or failed", e);
-                        }
-                    });
-                }
-
-                console.log("OpenWidget product recommendations loaded", products.length, "items.");
-
-            } catch (e) {
-                console.error("Failed to load OpenWidget recommendations", e);
-            }
-        }
-
-        // Initialize OpenWidget Recommendations
-        loadOpenWidgetRecommendations();
-    </script>
 
     <!-- Start of OpenWidget (www.openwidget.com) code -->
     <script>
-        window.__ow = window.__ow || {};
-        window.__ow.organizationId = "50f18445-f635-46d3-a473-bdd3c9b8dfa1";
-        window.__ow.integration_name = "manual_settings";
-        window.__ow.product_name = "openwidget";
-        ; (function (n, t, c) { function i(n) { return e._h ? e._h.apply(null, n) : e._q.push(n) } var e = { _q: [], _h: null, _v: "2.0", on: function () { i(["on", c.call(arguments)]) }, once: function () { i(["once", c.call(arguments)]) }, off: function () { i(["off", c.call(arguments)]) }, get: function () { if (!e._h) throw new Error("[OpenWidget] You can't use getters before load."); return i(["get", c.call(arguments)]) }, call: function () { i(["call", c.call(arguments)]) }, init: function () { var n = t.createElement("script"); n.async = !0, n.type = "text/javascript", n.src = "https://cdn.openwidget.com/openwidget.js", t.head.appendChild(n) } }; !n.__ow.asyncInit && e.init(), n.OpenWidget = n.OpenWidget || e }(window, document, [].slice))
+        window.addEventListener('load', function () {
+            window.__ow = window.__ow || {};
+            window.__ow.organizationId = "50f18445-f635-46d3-a473-bdd3c9b8dfa1";
+            window.__ow.integration_name = "manual_settings";
+            window.__ow.product_name = "openwidget";
+            ; (function (n, t, c) { function i(n) { return e._h ? e._h.apply(null, n) : e._q.push(n) } var e = { _q: [], _h: null, _v: "2.0", on: function () { i(["on", c.call(arguments)]) }, once: function () { i(["once", c.call(arguments)]) }, off: function () { i(["off", c.call(arguments)]) }, get: function () { if (!e._h) throw new Error("[OpenWidget] You can't use getters before load."); return i(["get", c.call(arguments)]) }, call: function () { i(["call", c.call(arguments)]) }, init: function () { var n = t.createElement("script"); n.async = !0, n.type = "text/javascript", n.src = "https://cdn.openwidget.com/openwidget.js", t.head.appendChild(n) } }; !n.__ow.asyncInit && e.init(), n.OpenWidget = n.OpenWidget || e }(window, document, [].slice))
+        });
     </script>
     <noscript>You need to <a href="https://www.openwidget.com/enable-javascript" rel="noopener nofollow">enable
             JavaScript</a> to use the communication tool powered by <a href="https://www.openwidget.com/"
