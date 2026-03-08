@@ -1,6 +1,27 @@
 {
   "sites": [
     {
+      "name": "mk8",
+      "logo": "https://www.google.com/s2/favicons?sz=128&domain=mk88112.com",
+      "image": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https://img.alltocon.com/img/te1prod/promos/9f62da81-f79e-4169-8368-5dccd9e98bb1.jpg",
+      "url": "https://www.mk88112.com/?af=PU5GQB",
+      "tagline": "รับประกันเจ๊งภายใน 5 นาที!"
+    },
+    {
+      "name": "th26",
+      "logo": "https://www.google.com/s2/favicons?sz=128&domain=th26.com",
+      "image": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https://img.alltocon.com/img/te2prod/promos/1229caa9-6621-471a-950a-ca5a0e07498d.png",
+      "url": "https://www.th2226.com/?af=12OUAF",
+      "tagline": "โบนัสแจกจริง แต่ถอนไม่ได้ 😂"
+    },
+    {
+      "name": "twinking",
+      "logo": "https://www.google.com/s2/favicons?sz=128&domain=twinking.live",
+      "image": "https://res.cloudinary.com/dvffsjgc3/image/fetch/f_auto,q_auto:low,w_512/https://self-imagex.image-etc.co/TWINKING/BANNER_1/1768132744067809472l0ugA26fi5.webp?auto=compress",
+      "url": "https://twinking.live/register?token=caZKDY05WRjSIHK4",
+      "tagline": "รับประกันเจ๊งภายใน 5 นาที!"
+    },
+    {
       "name": "vv72",
       "logo": "https://upload.781243555.com/2026-02-06/nUv997gN_997fd8adad3a453f82481992e83af623.webp",
       "image": "https://upload.781243555.com/2026-02-07/NCfwsNh0_eaa8f2ed034c91ea3cf707e19d399a55.webp",
