@@ -1,5 +1,5 @@
 :root {
-  --goo-ui-zoom: 0.5;
+  --goo-ui-zoom: 0.3;
 }
 
 html {
@@ -25,8 +25,8 @@ canvas {
   z-index: 2;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 30px;
-  padding: 40px;
+  gap: 2px;
+  padding: 2px;
   max-width: 800px;
   margin: 0 auto;
 }
@@ -64,7 +64,7 @@ canvas {
 
 .icon-grid img {
   width: 100px;
-  height: 80px;
+  height: 100px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.1);
   padding: 4px;
@@ -375,8 +375,8 @@ canvas {
 .shortcuts-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 30px;
-  padding: 40px;
+  gap: 10px;
+  padding: 10px;
   max-width: 800px;
   margin: 0 auto;
   position: relative;
@@ -387,19 +387,19 @@ canvas {
 @media (max-width: 640px) {
   .shortcuts-container {
     grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-    padding: 24px 16px;
+    gap: 4px;
+    padding: 4px 4px;
     max-width: none;
   }
 
   .shortcut-icon {
-    width: 84px;
-    height: 64px;
+    width: 184px;
+    height: 164px;
   }
 
   .shortcut-icon img {
-    width: 60px;
-    height: 40px;
+    width: 160px;
+    height: 60px;
   }
 }
 

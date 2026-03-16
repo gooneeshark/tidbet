@@ -51,6 +51,7 @@
       "sameAs": [
         "https://audio.com/goo-nee",
         "https://soloist.ai/goonee",
+        "https://gunee.netlify.app/",
         "https://goometa.figma.site/",
         "https://suno.com/@gooneebugseeder",
         "https://goohubl.vercel.app/",
@@ -82,49 +83,8 @@
     <!-- Fonts & Scripts -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="/index.css" rel="stylesheet">
-    <script src="https://goo-gem.netlify.app/top-bar-widget.js" defer></script>
-    <script>
-        // Measure goo-nav height and set CSS variable for safe spacing
-        (function () {
-            function updateSafeTop() {
-                var nav = document.getElementById('goonav-root') || document.querySelector('[id^="goonav"]');
-                if (!nav) return;
-                var h = nav.getBoundingClientRect().height;
-                document.documentElement.style.setProperty('--goo-topbar-safe-top', h + 'px');
-            }
-            // Watch for goo-nav injection
-            var obs = new MutationObserver(function () {
-                updateSafeTop();
-                var nav = document.getElementById('goonav-root') || document.querySelector('[id^="goonav"]');
-                if (nav) {
-                    new ResizeObserver(updateSafeTop).observe(nav);
-                    obs.disconnect();
-                }
-            });
-            obs.observe(document.documentElement, { childList: true, subtree: true });
-            window.addEventListener('load', updateSafeTop);
-            window.addEventListener('resize', updateSafeTop);
-        })();
-    </script>
 
-    <style>
-        :root {
-            color-scheme: dark;
-        }
 
-        body {
-            margin: 0;
-            background-color: #000000;
-            color: white;
-            font-family: 'Kanit', sans-serif;
-            overflow-x: hidden;
-        }
-
-        /* --- MAIN APP --- */
-        #root {
-            min-height: 100vh;
-        }
-    </style>
 </head>
 
 <body>
@@ -136,7 +96,7 @@
 
     <!-- Scripts from Goo Gemnee Template -->
     <script type="module" src="/index.tsx"></script>
- <script src="https://googem.netlify.app/top-bar-widget.js"></script>
+    <script src="https://googem.netlify.app/top-bar-widget.js"></script>
     <!-- Privacy Analytics -->
     <script data-collect-dnt="true" async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
     <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif?collect-dnt=true" alt=""
