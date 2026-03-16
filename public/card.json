@@ -1,6 +1,13 @@
 {
   "sites": [
     {
+      "name": "luk666",
+      "logo": "https://www.google.com/s2/favicons?sz=128&domain=www.luk666.icu",
+      "image": "https://download.ocms.cloud/v2/L6/PromotionInfoLanguage.2551_4_0.webp?version=0",
+      "url": "https://www.luk666.com?mid=Q3W5N4",
+      "tagline": "เฮงจริง แต่เฮงให้เจ้าบ้าน"
+    },
+    {
       "name": "xo789",
       "logo": "http://googem.netlify.app/image/xo789.webp",
       "image": "http://googem.netlify.app/image/xo789p.webp",
