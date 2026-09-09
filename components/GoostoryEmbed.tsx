@@ -17,7 +17,7 @@ const getGoogleFavicon = (url: string) => {
 };
 
 const BUNDLE_WIDGET_BASE = '';
-const MINI_BROWSER_HOME = '/mini-playground.html'; // ลิงก์ไปที่ไฟล์ Mini Playground ในเครื่องแทน
+const MINI_BROWSER_HOME = '/ad.html'; // ลิงก์ไปที่ไฟล์ Mini Playground ในเครื่องแทน
 
 interface Shortcut {
   id?: string;
